@@ -42,12 +42,12 @@ app.add_middleware(
 )
 
 
-app.include_router(shout.router, tags=["General"]) 
+# app.include_router(shout.router, tags=["General"]) 
 
-app.include_router(createuser.router, tags=["AUTH"])
-app.include_router(signInUser.router, tags=["AUTH"]) 
-app.include_router(updateuser.router, tags=["AUTH"])
-app.include_router(deleteuser.router, tags=["AUTH"])
+# app.include_router(createuser.router, tags=["AUTH"])
+# app.include_router(signInUser.router, tags=["AUTH"]) 
+# app.include_router(updateuser.router, tags=["AUTH"])
+# app.include_router(deleteuser.router, tags=["AUTH"])
 
 app.include_router(getstudent.router, tags=["Students"]) 
 app.include_router(createstudent.router, tags=["Students"])
