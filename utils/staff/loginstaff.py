@@ -1,0 +1,86 @@
+from fastapi import HTTPException 
+from sqlalchemy.orm import Session 
+from sqlalchemy import func
+from models.accounts import Users, Staff as Staffs
+from schemas.general.login import  Login
+from schemas.staff.staff import Staff, StaffAUTH
+from infrastructure.emailer import is_valid_email   
+from fastapi import HTTPException
+from pydantic import BaseModel
+from typing import Optional 
+
+from utils.general.getRunStaffProfile  import StaffProfile  
+def LoginStaff(payload: Login, db: Session ) -> StaffAUTH:  
+   try:     
+       ThisUser = None   
+       placeHolderLabel = "emailAddy" 
+       placeHolderValue = ""
+       if is_valid_email(payload.emailAddy) == False:
+        raise HTTPException(status_code=404, detail=f"Student(email={payload.emailAddy}) is not valid")  
+       ThisUser = db.query(Users).filter(func.lower(func.trim(Users.emailAddy)) == payload.emailAddy.strip().lower()).first()  
+       placeHolderValue = payload.emailAddy  
+       if ThisUser is None: 
+            try:
+                oStaffProfile: StaffProfile =  getStaffProfileFromPortal(payload)                 
+                from utils.staff.createstaff import  create_staff
+                from schemas.staff.staffcreate import StaffCreate
+                oStaffCreate = StaffCreate(   
+                    username =  oStaffProfile.staff_no,                    
+                    emailAddy = payload.emailAddy,
+                    firstname = oStaffProfile.firstname,
+                    middlename = oStaffProfile.middlename,
+                    lastname = oStaffProfile.lastname,
+                    password = f"{payload.password}", 
+                    designation = oStaffProfile.staff_type, 
+                    department = oStaffProfile.dept                    
+                    )
+                create_staff(oStaffCreate, db)  
+                ThisUser = db.query(Users).filter(func.lower(func.trim(Users.emailAddy)) == payload.emailAddy.strip().lower()).first()           
+                if ThisUser is None:
+                    raise HTTPException(status_code=404, detail=f"Staff(emailAddy= {payload.emailAddy}) is not valid!")
+            except  Exception as e:
+                raise HTTPException(status_code=404, detail=f"{e}") 
+       queryResult = db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id)       
+       ThisUserAndStaff= queryResult.filter(Users.id == ThisUser.id).first() 
+       if ThisUserAndStaff is None:
+           try:
+            ThisUserAndStaff = insert_staff(ThisUser, payload, db)
+            if ThisUserAndStaff is None:
+                raise HTTPException(status_code=404, detail=f"Staff ({payload.username}, {payload.emailAddy} ) not created!")
+           except Exception as e:
+            raise HTTPException(status_code=404, detail=f"{e}") 
+       _ , ThisStaff=   ThisUserAndStaff
+       if ThisStaff.is_Active == False:
+           raise HTTPException(status_code=404, detail=f"Staff({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
+       from utils.general.authentication import   ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+       from utils.general.authentication import Token, timedelta 
+       ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
+       access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+       access_token = create_access_token(
+        data={"sub": ThisUser.username}, expires_delta=access_token_expires
+          )
+       staff = Staff(id = ThisStaff.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
+                        middlename = ThisUser.middlename, lastname = f"{ThisUser.lastname}",
+                        emailAddy = f"{ThisUser.emailAddy}", dateCreated = ThisUser.dateTimeCreated, 
+                        designation= ThisStaff.designation, department= ThisStaff.department,
+                        is_Active= ThisStaff.is_Active)    
+       return StaffAUTH(staff = staff,
+                        token = access_token)
+   except Exception as e: 
+        db.rollback()        
+        raise HTTPException(status_code=404, detail=f"{e}")
+def  insert_staff(ThisUser, payload:Login, db:Session):
+    oStaffProfile: StaffProfile =  getStaffProfileFromPortal(payload)   
+    db_staff = Staffs(designation= oStaffProfile.staff_type, department= oStaffProfile.dept, 
+                      user_id =  ThisUser.id) # insert staff in DB
+    db.add(db_staff)         
+    db.commit()  
+    db.refresh(db_staff) 
+    queryResult =  db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id) 
+    return queryResult.filter(Users.id == ThisUser.id).first() 
+def getStaffProfileFromPortal(payload:Login) -> StaffProfile:   
+    try:
+        from utils.general.getRunStaffProfile import get_staff_profile
+        return  get_staff_profile(payload.emailAddy)  
+    except Exception as e:
+        raise e
