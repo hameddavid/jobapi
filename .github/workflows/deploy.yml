@@ -16,7 +16,6 @@ jobs:
 
     - name: Setup SSH
       run: |
-        mkdir -p /var/www/html/.ssh
         echo "${{ secrets.AAPANEL_SSH_KEY }}" > /var/www/html/.ssh/ssh_user_key
         chmod 600 /var/www/html/.ssh/ssh_user_key
         ssh-keyscan -H ${{ secrets.AAPANEL_HOST }} >> /var/www/html/.ssh/known_hosts
