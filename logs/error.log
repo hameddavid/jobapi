@@ -12421,6 +12421,7 @@ AttributeError: 'NoneType' object has no attribute 'id'
 [2025-04-14 18:45:45 +0200] [3349488] [INFO] Started server process [3349488]
 [2025-04-14 18:45:45 +0200] [3349488] [INFO] Waiting for application startup.
 [2025-04-14 18:45:45 +0200] [3349488] [INFO] Application startup complete.
+<<<<<<< HEAD
 [2025-04-15 11:57:21 +0200] [3349488] [ERROR] Exception in ASGI application
 Traceback (most recent call last):
   File "/var/www/html/jobapi/fb80129b65b03a673d06398535782dda_venv/lib/python3.10/site-packages/pymysql/connections.py", line 806, in _write_bytes
@@ -13580,3 +13581,5 @@ WHERE lower(trim(users.`emailAddy`)) = %(lower_1)s
  LIMIT %(param_1)s]
 [parameters: {'lower_1': 'adejokun7031@run.edu.ng', 'param_1': 1}]
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
+=======
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd

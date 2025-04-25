@@ -1,5 +1,9 @@
 # This file must be used with "source bin/activate.csh" *from csh*.
 # You cannot run it directly.
+<<<<<<< HEAD
+=======
+
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd
 # Created by Davide Di Blasi <davidedb@gmail.com>.
 # Ported to Python 3.3 venv by Andrew Svetlov <andrew.svetlov@gmail.com>
 
@@ -8,17 +12,29 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
+<<<<<<< HEAD
 setenv VIRTUAL_ENV "/var/www/html/jobapi/_venv"
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/bin:$PATH"
+=======
+setenv VIRTUAL_ENV /run/media/teewhy/4CE4DE99E4DE851C/works/RUN/fastapi/jobapi/_venv
+
+set _OLD_VIRTUAL_PATH="$PATH"
+setenv PATH "$VIRTUAL_ENV/"bin":$PATH"
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd
 
 
 set _OLD_VIRTUAL_PROMPT="$prompt"
 
 if (! "$?VIRTUAL_ENV_DISABLE_PROMPT") then
+<<<<<<< HEAD
     set prompt = "(_venv) $prompt"
     setenv VIRTUAL_ENV_PROMPT "(_venv) "
+=======
+    set prompt = '(_venv) '"$prompt"
+    setenv VIRTUAL_ENV_PROMPT '(_venv) '
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd
 endif
 
 alias pydoc python -m pydoc

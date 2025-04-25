@@ -22910,6 +22910,7 @@
 102.89.76.213:0 - "POST /createAdmin/ HTTP/1.1" 404
 105.113.52.90:0 - "GET /docs HTTP/1.1" 200
 105.113.52.90:0 - "GET /openapi.json HTTP/1.1" 200
+<<<<<<< HEAD
 105.113.52.90:0 - "POST /loginAdmin/ HTTP/1.1" 404
 105.113.52.90:0 - "GET / HTTP/1.1" 200
 105.113.52.90:0 - "GET /favicon.ico HTTP/1.1" 404
@@ -24074,3 +24075,5 @@
 105.113.52.90:0 - "GET /getadminbyemail?emailAddy=adejolao%40run.edu.ng HTTP/1.1" 200
 105.113.52.90:0 - "OPTIONS /activateAdmin/?emailAddy=adekoyaa%40run.edu.ng&activate=true HTTP/1.1" 200
 105.113.52.90:0 - "PUT /activateAdmin/?emailAddy=adekoyaa%40run.edu.ng&activate=true HTTP/1.1" 404
+=======
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd

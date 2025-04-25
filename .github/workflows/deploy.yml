@@ -1,0 +1,25 @@
+name: Deploy to Server
+on:
+  push:
+    branches:
+      - main # Or your main branch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Connect to server and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AAPANEL_HOST }}
+          username: sshuser
+          key: ${{ secrets.AAPANEL_PASSWORD }}
+          port: 22 # Or your SSH port
+          script: |
+            cd /var/www/html/jobapi # Go to your deployment directory
+            git pull origin main  # Pull the latest code
+            # Add your deployment commands here (e.g., install dependencies,
+            # run migrations, restart your application)
+            echo "Deployment successful!"
