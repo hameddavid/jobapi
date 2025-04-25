@@ -1,27 +1,25 @@
-name: Deploy to aaPanel
-
+name: Deploy to Server
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main # Or your main branch
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install SSH client
-      run: sudo apt-get install -y sshpass
-
-    - name: Deploy via SSH
-      run: |
-        # Use sshpass with the password from GitHub Secrets for password-based SSH login
-        sshpass -p "${{ secrets.AAPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.AAPANEL_USER }}@${{ secrets.AAPANEL_HOST }} <<EOF
-          cd ${{ secrets.APP_PATH }}
-          git pull origin main
-          source /var/www/html/jobapi/_venv/bin/activate
-          pip install -r requirements.txt
-          touch restart.txt
-        EOF
+      - name: Connect to server and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AAPANEL_HOST }}
+          username: sshuser
+          key: ${{ secrets.AAPANEL_PASSWORD }}
+          port: 22 # Or your SSH port
+          script: |
+            cd /var/www/html/jobapi # Go to your deployment directory
+            git pull origin main  # Pull the latest code
+            # Add your deployment commands here (e.g., install dependencies,
+            # run migrations, restart your application)
+            echo "Deployment successful!"
