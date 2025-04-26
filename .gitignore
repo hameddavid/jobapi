@@ -128,6 +128,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+_venv/
 .env
 .venv
 env/
@@ -135,6 +136,17 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+
+# alembic
+alembic/
+alembic.ini
+versions/
+
+
+# logs
+logs/
+
 
 # Spyder project settings
 .spyderproject

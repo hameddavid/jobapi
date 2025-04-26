@@ -10,3 +10,16 @@ class jobs(Base):  #  user may post more than one jobs
     status = Column(Integer,default=0)  #  job is closed by default until admin opens it
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
+    
+
+
+
+class jobCategory(Base):  #  Job category
+    __tablename__ = 'jobCategory'  #  
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(50), nullable=False) #  
+    description = Column(String(200), nullable=True)  #
+    deleted = Column(Boolean, default=False)  #  
+    createdBy = Column(String(50), nullable=False)  #
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  #
