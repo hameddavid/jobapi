@@ -35,6 +35,8 @@ def sendVerificationCodeToAdmin(ten_digit:str,admin:AdminCreate):
       retMsg =  sendEmail(optTypeOfUser = "0", processor =  admin.processor, subject="Create Admin: JobPost",
                           message="Please use the link below to verify your email account", 
                           receiver_email= admin.emailAddy, code = code, uri = admin.frontendurl)
+
+
 def create_admin(admin: AdminCreate, db: Session ):  
     try:   
         ## admin.password

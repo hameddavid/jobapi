@@ -12,7 +12,7 @@ from routes.students import createstudent, getstudent, updatestudent, loginstude
 from routes.staff import createstaff, getstaff, updatestaff, loginstaff
 from routes.admins import createadmin, getadmin, sendpassresetlinkadmin,updateadmin, activateadmin
 from routes.admins import verifyadmin, resetpasswordadmin, loginadmin
-from routes.jobs import getjob, createjob
+from routes.jobs import getjob, createjob, createjobcategory
 from routes.applications import getapplication
 import asyncio 
 app = FastAPI(
@@ -42,12 +42,12 @@ app.add_middleware(
 )
 
 
-app.include_router(shout.router, tags=["General"]) 
+# app.include_router(shout.router, tags=["General"]) 
 
-app.include_router(createuser.router, tags=["AUTH"])
-app.include_router(signInUser.router, tags=["AUTH"]) 
-app.include_router(updateuser.router, tags=["AUTH"])
-app.include_router(deleteuser.router, tags=["AUTH"])
+# app.include_router(createuser.router, tags=["AUTH"])
+# app.include_router(signInUser.router, tags=["AUTH"]) 
+# app.include_router(updateuser.router, tags=["AUTH"])
+# app.include_router(deleteuser.router, tags=["AUTH"])
 
 app.include_router(getstudent.router, tags=["Students"]) 
 app.include_router(createstudent.router, tags=["Students"])
@@ -70,6 +70,7 @@ app.include_router(verifyadmin.router, tags=["Admins"])
 
 app.include_router(getjob.router, tags=["Jobs"]) 
 app.include_router(createjob.router, tags=["Jobs"]) 
+app.include_router(createjobcategory.router, tags=["Jobs"])
 
 app.include_router(getapplication.router, tags=["Jobs.Applications"]) 
 
