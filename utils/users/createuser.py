@@ -4,6 +4,7 @@ from sqlalchemy import func
 from models.accounts import  Users,vTokens
 from schemas.users.usercreate import UserCreate
 from schemas.users.user import User #
+
 def create_user(user: UserCreate, db: Session):  
     try:
         from .getuser import get_user_by_email_ver2
@@ -41,6 +42,7 @@ def create_user(user: UserCreate, db: Session):
     except Exception as e:
         db.rollback()
         raise e
+    
 def create_user_ver2(user: UserCreate, password:str, ten_digit:str, db: Session): 
     try:  # this method is invariably invoked inside an ATOMIC Transaction
         from .getuser import get_user_by_email_ver2

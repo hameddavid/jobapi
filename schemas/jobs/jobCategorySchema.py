@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel 
 
 class CreateJobCategorySchema(BaseModel):   
@@ -15,4 +16,3 @@ class GetJobCategorySchema(BaseModel):
     createdAt: str
     updatedAt: str
     
-  
