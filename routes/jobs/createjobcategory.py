@@ -6,8 +6,10 @@ from schemas.jobs import jobCategorySchema
 
 router = APIRouter()     
 @router.post("/createJobCategory/", include_in_schema=True)         #, response_model=jobCategorySchema.GetJobCategorySchema 
-async def jobcatCreate(jobCat: jobCategorySchema.CreateJobCategorySchema = Body(..., embed= True), db: Session = Depends(get_db)):
+async def jobCatCreate(jobCat: jobCategorySchema.CreateJobCategorySchema = Body(..., embed= True), db: Session = Depends(get_db)):
    return create_job_category(jobCat, db)
+
+
 
 
    

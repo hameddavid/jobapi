@@ -12,7 +12,7 @@ from routes.students import createstudent, getstudent, updatestudent, loginstude
 from routes.staff import createstaff, getstaff, updatestaff, loginstaff
 from routes.admins import createadmin, getadmin, sendpassresetlinkadmin,updateadmin, activateadmin
 from routes.admins import verifyadmin, resetpasswordadmin, loginadmin
-from routes.jobs import getjob, createjob, createjobcategory
+from routes import jobs
 from routes.applications import getapplication
 import asyncio 
 app = FastAPI(
@@ -68,9 +68,12 @@ app.include_router(updateadmin.router, tags=["Admins"])
 app.include_router(sendpassresetlinkadmin.router, tags=["Admins"])
 app.include_router(verifyadmin.router, tags=["Admins"]) 
 
-app.include_router(getjob.router, tags=["Jobs"]) 
-app.include_router(createjob.router, tags=["Jobs"]) 
-app.include_router(createjobcategory.router, tags=["Jobs"])
+
+app.include_router(jobs.createJob, tags=["Jobs"])
+app.include_router(jobs.jobCatCreate, tags=["Jobs"])
+app.include_router(jobs.updateJobCat, tags=["Jobs"]) 
+app.include_router(jobs.listJob, tags=["Jobs"]) 
+
 
 app.include_router(getapplication.router, tags=["Jobs.Applications"]) 
 
