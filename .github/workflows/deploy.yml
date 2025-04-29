@@ -1,6 +1,4 @@
-
-
-name: Deploy to aaPanel
+name: Deploy to aaPanel (Password Authentication Test - UNSAFE)
 
 on:
   push:
@@ -14,18 +12,13 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
 
-    - name: Setup SSH
-      run: |
-        echo "${{ secrets.AAPANEL_SSH_KEY }}" > /var/www/html/.ssh/ssh_user_key
-        chmod 600 /var/www/html/.ssh/ssh_user_key
-        ssh-keyscan -H ${{ secrets.AAPANEL_HOST }} >> /var/www/html/.ssh/known_hosts
+    - name: Install sshpass
+      run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    - name: Deploy via SSH
+    - name: Check sshpass installation
+      run: which sshpass
+
+    - name: Test SSH with Password (UNSAFE)
       run: |
-        ssh ${{ secrets.AAPANEL_USER }}@${{ secrets.AAPANEL_HOST }} <<EOF
-          cd ${{ secrets.APP_PATH }}
-          git pull origin main
-          source /var/www/html/jobapi/_venv/bin/activate
-          pip install -r requirements.txt
-          touch restart.txt  
-        EOF
+        echo "Attempting basic SSH with password..."
+        sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} 'echo "Connected via sshpass!"'
