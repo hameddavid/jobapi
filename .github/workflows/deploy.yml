@@ -17,6 +17,7 @@ jobs:
 
     - name: Deploy via SSH with Password (UNSAFE)
       run: |
+        mkdir -p ~/.ssh
         echo "Adding host key to known_hosts..."
         ssh-keyscan -H ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
         echo "Attempting SSH connection with password..."
