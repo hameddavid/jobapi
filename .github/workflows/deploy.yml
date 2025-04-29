@@ -1,31 +1,33 @@
-
-
-name: Deploy to aaPanel
+name: Deploy to cPanel (Local Docker Build)
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup SSH
-      run: |
-        echo "${{ secrets.AAPANEL_SSH_KEY }}" > /var/www/html/.ssh/ssh_user_key
-        chmod 600 /var/www/html/.ssh/ssh_user_key
-        ssh-keyscan -H ${{ secrets.AAPANEL_HOST }} >> /var/www/html/.ssh/known_hosts
+      - name: Setup SSH
+        uses: webfactory/ssh-action@v1
+        with:
+          host: ${{ secrets.CPANEL_HOST }}
+          port: ${{ secrets.CPANEL_PORT || '22' }}
+          username: ${{ secrets.CPANEL_USERNAME }}
+          private-key: ${{ secrets.CPANEL_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.CPANEL_KNOWN_HOSTS }} # Optional
 
-    - name: Deploy via SSH
-      run: |
-        ssh ${{ secrets.AAPANEL_USER }}@${{ secrets.AAPANEL_HOST }} <<EOF
-          cd ${{ secrets.APP_PATH }}
-          git pull origin main
-          source /var/www/html/jobapi/_venv/bin/activate
-          pip install -r requirements.txt
-          touch restart.txt  
-        EOF
+      - name: Transfer code to cPanel
+        run: |
+          rsync -avz -e "ssh -p ${{ secrets.CPANEL_PORT || '22' }}" \
+            ./ ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }}:${{ secrets.CPANEL_PROJECT_PATH }}
+
+      - name: Execute Deployment Script (Build and Run Docker)
+        run: |
+          ssh ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
+
+env:
+  CPANEL_PROJECT_PATH: "/home/runedu/public_html/job_be" # Define as an environment variable or secret
