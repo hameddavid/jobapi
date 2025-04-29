@@ -17,4 +17,7 @@ jobs:
 
     - name: Deploy via SSH with Password (UNSAFE)
       run: |
-        sshpass -p "${{ secrets.CPANEL_PRIVATE_KEY }}" ssh -o StrictHostKeyChecking=yes ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
+        echo "Adding host key to known_hosts..."
+        ssh-keyscan -H ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
+        echo "Attempting SSH connection with password..."
+        sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=yes ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
