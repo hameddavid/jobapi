@@ -1,4 +1,4 @@
-name: Deploy to aaPanel (Password Authentication - UNSAFE)
+name: Deploy to aaPanel (Password Authentication Test - UNSAFE)
 
 on:
   push:
@@ -15,8 +15,10 @@ jobs:
     - name: Install sshpass
       run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    - name: Deploy via SSH with Password (UNSAFE)
+    - name: Check sshpass installation
+      run: which sshpass
+
+    - name: Test SSH with Password (UNSAFE)
       run: |
-        echo "Adding host key to known_hosts..."
-        echo "Attempting SSH connection with password..."
-        sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
+        echo "Attempting basic SSH with password..."
+        sshpass -p "${{ secrets.CPANEL_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} 'echo "Connected via sshpass!"'
