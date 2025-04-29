@@ -1,4 +1,4 @@
-name: Deploy to aaPanel
+name: Deploy to aaPanel (Password Authentication - UNSAFE)
 
 on:
   push:
@@ -12,16 +12,9 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
 
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.CPANEL_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.CPANEL_HOST }} >> ~/.ssh/known_hosts
-        echo "SSH key and known_hosts configured."
+    - name: Install sshpass
+      run: sudo apt-get update && sudo apt-get install -y sshpass
 
-    - name: Deploy via SSH
+    - name: Deploy via SSH with Password (UNSAFE)
       run: |
-        echo "Executing deployment script on ${{ secrets.CPANEL_HOST }}"
-        ssh -o StrictHostKeyChecking=yes ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
-        echo "Deployment script executed."
+        sshpass -p "${{ secrets.CPANEL_PRIVATE_KEY }}" ssh -o StrictHostKeyChecking=yes ${{ secrets.CPANEL_USERNAME }}@${{ secrets.CPANEL_HOST }} -p ${{ secrets.CPANEL_PORT || '22' }} "bash ${{ secrets.CPANEL_PROJECT_PATH }}/deploy.sh"
