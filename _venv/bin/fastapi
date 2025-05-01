@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+#!/var/www/html/jobapi/_venv/bin/python
+=======
 #!/run/media/teewhy/4CE4DE99E4DE851C/works/RUN/fastapi/jobapi/_venv/bin/python
+>>>>>>> b5a6d6995f97839fe33570b7c2d56922107dfadd
 # -*- coding: utf-8 -*-
 import re
 import sys
