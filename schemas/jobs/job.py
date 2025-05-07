@@ -1,5 +1,6 @@
-from pydantic import BaseModel 
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+
 
 from schemas.users.user import User
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
@@ -46,5 +47,7 @@ class ListJobSchema(BaseModel):
     category: GetJobCategorySchema
     dateTimeCreated: datetime
     deleted: str = 'N'
-    class Config:
-        orm_mode = True
+    
+    model_config = ConfigDict(from_attributes=True)
+    # class Config:
+    #     orm_mode = True

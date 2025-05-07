@@ -16,9 +16,7 @@ def create_job_category(jobCat:jobCategorySchema.CreateJobCategorySchema,TheUser
         db.add(jobCat)
         db.commit()
         db.refresh(jobCat)
-        cat_owner = UserSchema(id = jobCat.user.id, username = jobCat.user.username, emailAddy = jobCat.user.emailAddy,
-                firstname = jobCat.user.firstname, lastname = jobCat.user.lastname,
-                middlename = jobCat.user.middlename, dateCreated = jobCat.user.dateTimeCreated,) 
+        cat_owner = UserSchema.model_validate(jobCat.user)
         return GetJobCategorySchema(id = jobCat.id, name = jobCat.name, description = jobCat.description,
                 deleted = jobCat.deleted, createdBy = cat_owner,
                 createdAt = jobCat.createdAt, updatedAt = jobCat.updatedAt)

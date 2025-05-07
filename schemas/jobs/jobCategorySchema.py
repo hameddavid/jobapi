@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from schemas.users.user import User as UserSchema
 
-# from pydantic import  ConfigDict
+from pydantic import  ConfigDict
 
 class CreateJobCategorySchema(BaseModel):   
     name: str
@@ -23,8 +23,8 @@ class GetJobCategorySchema(BaseModel):
     createdAt: datetime
     updatedAt: datetime
     
-    # model_config = ConfigDict(from_attributes=True)
-    class Config:
-        orm_mode = True  
+    model_config = ConfigDict(from_attributes=True)
+    # class Config:
+    #     orm_mode = True  
     
     

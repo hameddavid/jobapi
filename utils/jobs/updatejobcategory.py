@@ -20,9 +20,7 @@ def update_job_category(jobCat:jobCategorySchema.UpdateJobCategorySchema,TheUser
            cat.deleted = jobCat.deleted
            db.commit()
            db.refresh(cat)
-           cat_owner = UserSchema(id = cat.user.id, username = cat.user.username, emailAddy = cat.user.emailAddy,
-                firstname = cat.user.firstname, lastname = cat.user.lastname,
-                middlename = cat.user.middlename, dateCreated = cat.user.dateTimeCreated,) 
+           cat_owner = UserSchema.model_validate(cat.user)
            return GetJobCategorySchema(id = cat.id, name = cat.name, description = cat.description,
                 deleted = cat.deleted, createdBy = cat_owner,
                 createdAt = cat.createdAt, updatedAt = cat.updatedAt)

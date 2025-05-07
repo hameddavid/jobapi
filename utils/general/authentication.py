@@ -80,7 +80,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
             middlename=ThisUser.middlename, 
             lastname=ThisUser.lastname,
             emailAddy=ThisUser.emailAddy, 
-            dateCreated=ThisUser.dateTimeCreated
+            dateTimeCreated=ThisUser.dateTimeCreated
         )  
     except Exception as e:
         credentials_exception = HTTPException(

@@ -2,7 +2,6 @@ from fastapi import   HTTPException
 from sqlalchemy.orm import Session
 from schemas.users.user import User
 from schemas.jobs.job import JobCreate
-from schemas.jobs.job import Job as JobSchema
 from models.jobs import jobs as jobModel
 
 
@@ -21,6 +20,6 @@ def create_job(job: JobCreate, ThisUser:User, db: Session ):
         db.refresh(newJob)
         return newJob
     except Exception as e:       
-        raise HTTPException(status_code=404, detail=f"Error updating job : {str(e)})") 
+        raise HTTPException(status_code=404, detail=f"Error creating job : {str(e)})") 
 
     
