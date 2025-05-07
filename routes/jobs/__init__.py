@@ -6,5 +6,6 @@ from . import createjobcategory
 from . import deletejob
 from . import deletejobcategory
 from . import listjob
+from . import listjobcategory
 from . import updatejob
 from . import updatejobcategory

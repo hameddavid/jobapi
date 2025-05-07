@@ -1,6 +1,6 @@
 from fastapi import  Depends 
 from sqlalchemy.orm import Session 
-from utils.jobs.getjob import list_jobs
+from utils.jobs import getjob 
 from models.database import  get_db
 from schemas.jobs.job import Job 
 from schemas.users.user import User
@@ -10,6 +10,6 @@ from .router import router
 @router.get("/listjobs", include_in_schema=True, response_model=list[Job])
 async def do(skip: int = 0, limit:int = 100,
                     db: Session = Depends(get_db),TheUser: User = Depends(get_current_user)):   
-    return list_jobs(skip, limit, db)
+    return getjob.list_jobs(skip, limit, db)
 
 
