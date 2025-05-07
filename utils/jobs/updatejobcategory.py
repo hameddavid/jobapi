@@ -2,6 +2,8 @@ from fastapi import   HTTPException
 from sqlalchemy.orm import Session
 from models.jobs import jobCategory
 from schemas.jobs import jobCategorySchema
+from schemas.jobs.jobCategorySchema import GetJobCategorySchema
+from schemas.users.user import User as UserSchema
 
 def update_job_category(jobCat:jobCategorySchema.UpdateJobCategorySchema,TheUser, db: Session ):  
     
@@ -18,7 +20,13 @@ def update_job_category(jobCat:jobCategorySchema.UpdateJobCategorySchema,TheUser
            cat.deleted = jobCat.deleted
            db.commit()
            db.refresh(cat)
-           return cat
+           cat_owner = UserSchema(id = cat.user.id, username = cat.user.username, emailAddy = cat.user.emailAddy,
+                firstname = cat.user.firstname, lastname = cat.user.lastname,
+                middlename = cat.user.middlename, dateCreated = cat.user.dateTimeCreated,) 
+           return GetJobCategorySchema(id = cat.id, name = cat.name, description = cat.description,
+                deleted = cat.deleted, createdBy = cat_owner,
+                createdAt = cat.createdAt, updatedAt = cat.updatedAt)
+          
     except Exception as e:       
         raise HTTPException(status_code=404, detail=f"Error updating job category: {str(e)})") 
 

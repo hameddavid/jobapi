@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime,ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base 
+from .jobs import jobs, jobCategory  #  import jobs and jobCategory models
+
 class Users(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -18,6 +20,9 @@ class Users(Base):
     staff = relationship('Staff', back_populates='user')
     students = relationship('Students', back_populates='user')
     admins = relationship('Admins', back_populates='user')
+    jobs = relationship("jobs", back_populates="owner")  #  user who posted the job
+    job_category = relationship("jobCategory", back_populates="user")  #  user who created the job category
+    
 class vTokens(Base):  # verification tokens are stored in this table per Users account
     __tablename__ =  'vTokens'
     emailVerificationToken = Column(String(100), primary_key= True, nullable=False)  #  remove record after verification is completed

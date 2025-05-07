@@ -1,6 +1,9 @@
 
 from pydantic import BaseModel 
 from datetime import datetime
+from schemas.users.user import User as UserSchema
+
+# from pydantic import  ConfigDict
 
 class CreateJobCategorySchema(BaseModel):   
     name: str
@@ -16,10 +19,11 @@ class GetJobCategorySchema(BaseModel):
     name: str
     description: str  
     deleted : str = 'N'
-    createdBy: int
+    createdBy: UserSchema
     createdAt: datetime
     updatedAt: datetime
     
+    # model_config = ConfigDict(from_attributes=True)
     class Config:
         orm_mode = True  
     

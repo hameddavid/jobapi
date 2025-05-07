@@ -2,6 +2,8 @@ from fastapi import   HTTPException
 from sqlalchemy.orm import Session
 from models.jobs import jobCategory
 from schemas.jobs import jobCategorySchema
+from schemas.jobs.jobCategorySchema import GetJobCategorySchema
+from schemas.users.user import User as UserSchema
 
 def create_job_category(jobCat:jobCategorySchema.CreateJobCategorySchema,TheUser, db: Session ):  
     
@@ -14,8 +16,14 @@ def create_job_category(jobCat:jobCategorySchema.CreateJobCategorySchema,TheUser
         db.add(jobCat)
         db.commit()
         db.refresh(jobCat)
-        return jobCat
+        cat_owner = UserSchema(id = jobCat.user.id, username = jobCat.user.username, emailAddy = jobCat.user.emailAddy,
+                firstname = jobCat.user.firstname, lastname = jobCat.user.lastname,
+                middlename = jobCat.user.middlename, dateCreated = jobCat.user.dateTimeCreated,) 
+        return GetJobCategorySchema(id = jobCat.id, name = jobCat.name, description = jobCat.description,
+                deleted = jobCat.deleted, createdBy = cat_owner,
+                createdAt = jobCat.createdAt, updatedAt = jobCat.updatedAt)
     except Exception as e:       
         raise HTTPException(status_code=404, detail=f"Error creating job category: {str(e)})") 
+    
 
     

@@ -1,5 +1,8 @@
 from pydantic import BaseModel 
 from datetime import datetime
+
+from schemas.users.user import User
+from schemas.jobs.jobCategorySchema import GetJobCategorySchema
 class Owner:
     username: str
     emailAddy: str
@@ -31,3 +34,17 @@ class JobUpdate(JobCreate):
     id: int
     status: int
     deleted: str = 'N'
+    
+class ListJobSchema(BaseModel):
+    id: int  
+    title: str
+    description: str  
+    location: str
+    listed_price: float
+    status:int
+    owner:  User    #   he posted the job
+    category: GetJobCategorySchema
+    dateTimeCreated: datetime
+    deleted: str = 'N'
+    class Config:
+        orm_mode = True
