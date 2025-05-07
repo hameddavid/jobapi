@@ -2,10 +2,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session 
 from sqlalchemy import func
 from models.accounts import Users, Admins 
-from schemas.general.login import  Login
+from schemas.general.login import   LoginAdmin
 from schemas.admins.admin import Admin, AdminAUTH
 import hashlib
-def LoginAdmin(payload: Login, db: Session ):  
+def LoginAdmin(payload: LoginAdmin, db: Session ):  
    try:   
        '''   
        placeHolderLabel = "username" 
@@ -41,9 +41,9 @@ def LoginAdmin(payload: Login, db: Session ):
             sendVerificationCodeToAdmin(ten_digit, payload)   
             raise HTTPException(status_code=404, detail=f"Admin({placeHolderLabel}={placeHolderValue}) account is awaiting verification...check your inbox.") 
        _ , ThisAdmin =   ThisUserAndAdmin
-       if ThisAdmin.is_Active == False:
+       if not ThisAdmin.is_Active:
            raise HTTPException(status_code=404, detail=f"Admin({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
-       from utils.general.authentication import   ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+       from utils.general.authentication import   create_access_token
        from utils.general.authentication import Token, timedelta 
        ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -58,10 +58,10 @@ def LoginAdmin(payload: Login, db: Session ):
    except Exception as e: 
         db.rollback()        
         raise e
-def sendVerificationCodeToAdmin(ten_digit:str,payload:Login):        
+def sendVerificationCodeToAdmin(ten_digit:str,payload:LoginAdmin):        
       from infrastructure.emailer  import  sendEmail   
       code = f"{ten_digit}{payload.emailAddy.strip().lower()}"
       code = hashlib.md5(code.encode()).hexdigest()
-      retMsg =  sendEmail(processor =  payload.processor, subject="Verify Admin",
+      sendEmail(processor =  payload.processor, subject="Verify Admin",
                           message="Please use the link below to verify your email account", 
                           receiver_email= payload.emailAddy, code = code, uri = payload.frontendURL)

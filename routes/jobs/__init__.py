@@ -1,4 +1,10 @@
-from .createjobcategory import router as jobCatCreate
-from .updatejobcategory import router as updateJobCat
-from .listjob import router as listJob
-from .createjob import router as createJob
+
+
+from .router import router
+from . import createjob
+from . import createjobcategory
+from . import deletejob
+from . import deletejobcategory
+from . import listjob
+from . import updatejob
+from . import updatejobcategory

@@ -2,20 +2,16 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session 
 from sqlalchemy import func
 from models.accounts import Users, Staff as Staffs
-from schemas.general.login import  Login
+from schemas.general.login import  LoginStaff
 from schemas.staff.staff import Staff, StaffAUTH
-from infrastructure.emailer import is_valid_email   
-from fastapi import HTTPException
-from pydantic import BaseModel
-from typing import Optional 
-
+from infrastructure.emailer import is_valid_email  
 from utils.general.getRunStaffProfile  import StaffProfile  
-def LoginStaff(payload: Login, db: Session ) -> StaffAUTH:  
+def LoginStaff(payload: LoginStaff, db: Session ) -> StaffAUTH:  
    try:     
        ThisUser = None   
        placeHolderLabel = "emailAddy" 
        placeHolderValue = ""
-       if is_valid_email(payload.emailAddy) == False:
+       if not is_valid_email(payload.emailAddy):
         raise HTTPException(status_code=404, detail=f"Student(email={payload.emailAddy}) is not valid")  
        ThisUser = db.query(Users).filter(func.lower(func.trim(Users.emailAddy)) == payload.emailAddy.strip().lower()).first()  
        placeHolderValue = payload.emailAddy  
@@ -50,10 +46,10 @@ def LoginStaff(payload: Login, db: Session ) -> StaffAUTH:
            except Exception as e:
             raise HTTPException(status_code=404, detail=f"{e}") 
        _ , ThisStaff=   ThisUserAndStaff
-       if ThisStaff.is_Active == False:
+       if not ThisStaff.is_Active:
            raise HTTPException(status_code=404, detail=f"Staff({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
-       from utils.general.authentication import   ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
-       from utils.general.authentication import Token, timedelta 
+       from utils.general.authentication import   create_access_token
+       from utils.general.authentication import  timedelta 
        ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
        access_token = create_access_token(
@@ -69,7 +65,7 @@ def LoginStaff(payload: Login, db: Session ) -> StaffAUTH:
    except Exception as e: 
         db.rollback()        
         raise HTTPException(status_code=404, detail=f"{e}")
-def  insert_staff(ThisUser, payload:Login, db:Session):
+def  insert_staff(ThisUser, payload:LoginStaff, db:Session):
     oStaffProfile: StaffProfile =  getStaffProfileFromPortal(payload)   
     db_staff = Staffs(designation= oStaffProfile.staff_type, department= oStaffProfile.dept, 
                       user_id =  ThisUser.id) # insert staff in DB
@@ -78,7 +74,7 @@ def  insert_staff(ThisUser, payload:Login, db:Session):
     db.refresh(db_staff) 
     queryResult =  db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id) 
     return queryResult.filter(Users.id == ThisUser.id).first() 
-def getStaffProfileFromPortal(payload:Login) -> StaffProfile:   
+def getStaffProfileFromPortal(payload:LoginStaff) -> StaffProfile:   
     try:
         from utils.general.getRunStaffProfile import get_staff_profile
         return  get_staff_profile(payload.emailAddy)  

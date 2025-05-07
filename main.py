@@ -45,7 +45,7 @@ app.add_middleware(
 # app.include_router(shout.router, tags=["General"]) 
 
 # app.include_router(createuser.router, tags=["AUTH"])
-# app.include_router(signInUser.router, tags=["AUTH"]) 
+app.include_router(signInUser.router, tags=["AUTH"]) 
 # app.include_router(updateuser.router, tags=["AUTH"])
 # app.include_router(deleteuser.router, tags=["AUTH"])
 
@@ -69,10 +69,10 @@ app.include_router(sendpassresetlinkadmin.router, tags=["Admins"])
 app.include_router(verifyadmin.router, tags=["Admins"]) 
 
 
-app.include_router(jobs.createJob, tags=["Jobs"])
-app.include_router(jobs.jobCatCreate, tags=["Jobs"])
-app.include_router(jobs.updateJobCat, tags=["Jobs"]) 
-app.include_router(jobs.listJob, tags=["Jobs"]) 
+
+ 
+
+app.include_router(jobs.router,prefix="/job", tags=["Jobs"])
 
 
 app.include_router(getapplication.router, tags=["Jobs.Applications"]) 
