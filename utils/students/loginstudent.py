@@ -106,7 +106,7 @@ def LoginStudent(payload: Login, db: Session ):
                         middlename = ThisUser.middlename, lastname = ThisUser.lastname,
                         emailAddy = ThisUser.emailAddy, programme = ThisStudent.programme, 
                         level = ThisStudent.level, is_UG = True,
-                        dateCreated = ThisStudent.dateTimeCreated, is_Active= ThisStudent.is_Active) 
+                        dateTimeCreated = ThisStudent.dateTimeCreated, is_Active= ThisStudent.is_Active) 
 
        return StudentAUTH(student = student,
                         token = access_token)

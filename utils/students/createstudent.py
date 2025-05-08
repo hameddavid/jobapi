@@ -31,7 +31,7 @@ def create_student(student: StudentCreate, db: Session ) -> Student:
         db.refresh(db_student)        
         return Student(id = db_student.id,  username = student.username,  firstname = student.firstname,  
                     middlename = student.middlename, lastname = student.lastname,emailAddy = student.emailAddy, 
-                    dateCreated = db_student.dateTimeCreated,  is_Active = db_student.is_Active,
+                    dateTimeCreated = db_student.dateTimeCreated,  is_Active = db_student.is_Active,
                     programme = student.programme, level = student.level, is_UG = student.is_UG)     
     except Exception as e:
         db.rollback()  # rolls back transaction if there is any failure

@@ -22,7 +22,7 @@ def update_admin(admin: AdminUpdate, db: Session ):
     db.commit()    
     return Admin(id = ThisAdmin.id, username = ThisAdmin.username,  firstname = admin.firstname,  
                     middlename = admin.middlename, lastname = admin.lastname,emailAddy = ThisAdmin.emailAddy, 
-                    dateCreated = ThisAdmin.dateCreated, is_Active=  ThisAdmin.is_Active)     
+                    dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active=  ThisAdmin.is_Active)     
    except Exception as e:
         db.rollback()
         raise e

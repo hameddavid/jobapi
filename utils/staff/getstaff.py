@@ -12,7 +12,7 @@ def get_staff(username: str, db: Session ) -> Staff:
     Thisuser, ThisStaff=  ThisUserAndStaff  # unpacks     
     return Staff(id = ThisStaff.id,username = Thisuser.username,  firstname = Thisuser.firstname,  
                 middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                dateCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
+                dateTimeCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
                 department= ThisStaff.department, is_Active= ThisStaff.is_Active)    
 def get_staff_by_email(emailAddy: str, db: Session ) -> Staff:    
     queryResult = db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id)
@@ -22,7 +22,7 @@ def get_staff_by_email(emailAddy: str, db: Session ) -> Staff:
     Thisuser, ThisStaff=  ThisUserAndStaff  # unpacks     
     return Staff(id = ThisStaff.id,username = Thisuser.username,  firstname = Thisuser.firstname,  
                 middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                dateCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
+                dateTimeCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
                 department= ThisStaff.department, is_Active= ThisStaff.is_Active) 
 def get_staff_ver2(username: str, db: Session ) -> Staff:    
     queryResult = db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id)
@@ -32,7 +32,7 @@ def get_staff_ver2(username: str, db: Session ) -> Staff:
     Thisuser, ThisStaff=  ThisUserAndStaff  # unpacks     
     return Staff(id = ThisStaff.id,username = Thisuser.username,  firstname = Thisuser.firstname,  
                 middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                dateCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
+                dateTimeCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
                 department= ThisStaff.department, is_Active= ThisStaff.is_Active) 
 def get_staff_by_email_ver2(emailAddy: str, db: Session ) -> Staff:  
     queryResult = db.query(Users, Staffs).join(Staffs, Users.id == Staffs.user_id)
@@ -42,7 +42,7 @@ def get_staff_by_email_ver2(emailAddy: str, db: Session ) -> Staff:
     Thisuser, ThisStaff=  ThisUserAndStaff  # unpacks      
     return Staff(id = ThisStaff.id,username = Thisuser.username,  firstname = Thisuser.firstname,  
                 middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                dateCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
+                dateTimeCreated = ThisStaff.dateTimeCreated, designation=  ThisStaff.designation, 
                 department= ThisStaff.department, is_Active= ThisStaff.is_Active)
 def get_staffs_all(skip:int, limit:int, db: Session ) -> Staff: 
     staffs = db.query(Staffs).offset(skip).limit(limit).all()
@@ -52,7 +52,7 @@ def get_staffs_all(skip:int, limit:int, db: Session ) -> Staff:
     for staff in staffs:    
         ThisStaff =  Staff(id = staff.id, username = staff.user.username, firstname = staff.user.firstname,  
                 middlename = staff.user.middlename, lastname = staff.user.lastname,emailAddy = staff.user.emailAddy, 
-                dateCreated = staff.dateTimeCreated,  designation= staff.designation, department=staff.department, 
+                dateTimeCreated = staff.dateTimeCreated,  designation= staff.designation, department=staff.department, 
                 is_Active= staff.is_Active)       
         lstStaffs.append(ThisStaff)
     if not lstStaffs: # if list is empty

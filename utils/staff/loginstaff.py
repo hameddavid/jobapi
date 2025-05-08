@@ -57,7 +57,7 @@ def LoginStaff(payload: LoginStaff, db: Session ) -> StaffAUTH:
           )
        staff = Staff(id = ThisStaff.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = f"{ThisUser.lastname}",
-                        emailAddy = f"{ThisUser.emailAddy}", dateCreated = ThisUser.dateTimeCreated, 
+                        emailAddy = f"{ThisUser.emailAddy}", dateTimeCreated = ThisUser.dateTimeCreated, 
                         designation= ThisStaff.designation, department= ThisStaff.department,
                         is_Active= ThisStaff.is_Active)    
        return StaffAUTH(staff = staff,

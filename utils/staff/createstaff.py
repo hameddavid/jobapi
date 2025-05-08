@@ -32,7 +32,7 @@ def create_staff(staffUser: StaffCreate, db: Session ) -> Staff:
         db.refresh(db_staff)
         return Staff(id = db_staff.id,  username = staffUser.username,  firstname = staffUser.firstname,  
                         middlename = staffUser.middlename, lastname = staffUser.lastname,emailAddy = staffUser.emailAddy, 
-                        dateCreated = db_staff.dateTimeCreated, designation= db_staff.designation, department= db_staff.department,
+                        dateTimeCreated = db_staff.dateTimeCreated, designation= db_staff.designation, department= db_staff.department,
                         is_Active= db_staff.is_Active)
     except Exception as e:
             db.rollback()  # rolls back transaction if there is any failure

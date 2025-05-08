@@ -21,7 +21,7 @@ def update_user(user: UserUpdate, db: Session ):
     db.commit()    
     return User( id = Thisuser.id, username = Thisuser.username,  firstname = Thisuser.firstname,  
                   middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                    dateCreated = Thisuser.dateCreated )     
+                    dateTimeCreated = Thisuser.dateTimeCreated )     
    except Exception as e:
         db.rollback()
         raise e

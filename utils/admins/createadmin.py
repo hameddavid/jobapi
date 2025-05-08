@@ -97,7 +97,7 @@ def create_admin(admin: AdminCreate, db: Session ):
             db.refresh(db_admin)
             ret =  Admin(id = db_admin.id,  username = username,  firstname = firstname,  
                         middlename = middlename, lastname = lastname,emailAddy = emailAddy, 
-                        dateCreated = db_admin.dateTimeCreated,    is_Active= db_admin.is_Active)
+                        dateTimeCreated = db_admin.dateTimeCreated,    is_Active= db_admin.is_Active)
         except Exception as e:
             db.rollback()  # rolls back transaction if there is any failure
             raise HTTPException(status_code=404, detail = f"{e}")    

@@ -38,7 +38,7 @@ def create_user(user: UserCreate, db: Session):
         db.commit() 
         return User( id= db_user.id, username = user.username,  firstname = user.firstname,  
                     middlename = user.middlename, lastname = user.lastname,emailAddy = user.emailAddy, 
-                    dateCreated = db_user.dateTimeCreated )
+                    dateTimeCreated = db_user.dateTimeCreated )
     except Exception as e:
         db.rollback()
         raise e
@@ -88,6 +88,6 @@ def create_user_ver2(user: UserCreate, password:str, ten_digit:str, db: Session)
             db.flush()        
         return User( id = db_user.id, username = user.username,  firstname = user.firstname,  
                     middlename = user.middlename, lastname = user.lastname,emailAddy = user.emailAddy, 
-                    dateCreated = db_user.dateTimeCreated ) # returns the new user to the caller.
+                    dateTimeCreated = db_user.dateTimeCreated ) # returns the new user to the caller.
     except Exception as e:        
         raise e   

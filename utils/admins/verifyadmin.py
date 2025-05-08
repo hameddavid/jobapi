@@ -37,7 +37,7 @@ def verify_admin(payload: VerifyEmailAccount, db: Session ):
         db.delete(Token)      
      ret = Admin(id = ThisAdmin.id,username = Thisuser.username,  firstname =  Thisuser.firstname,  
                 middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                dateCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active)     
+                dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active)     
      db.commit()
      return ret
    except Exception as e: 

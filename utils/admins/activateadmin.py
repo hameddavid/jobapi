@@ -22,7 +22,7 @@ def activate_admin(emailAddy: str, bActivate:bool, db: Session):
         db.refresh(ThisAdmin)
         return Admin(id = ThisAdmin.id, username = user.username,  firstname = user.firstname,  
                     middlename = user.middlename, lastname = user.lastname,emailAddy = user.emailAddy, 
-                    dateCreated = ThisAdmin.dateTimeCreated, is_Active=  ThisAdmin.is_Active)   
+                    dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active=  ThisAdmin.is_Active)   
     except Exception as e:
         db.rollback()
         raise e

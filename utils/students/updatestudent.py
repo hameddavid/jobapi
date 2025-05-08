@@ -26,7 +26,7 @@ def update_student(student: StudentUpdate, db: Session ) -> Student:
     db.commit()    
     return Student(id = ThisStudent.id,username = student.username,  firstname = student.firstname,  
                 middlename = student.middlename, lastname = student.lastname,emailAddy = student.emailAddy, 
-                dateCreated = ThisStudent.dateTimeCreated, programme= ThisStudent.programme, level= ThisStudent.level,
+                dateTimeCreated = ThisStudent.dateTimeCreated, programme= ThisStudent.programme, level= ThisStudent.level,
                 is_Active= ThisStudent.is_Active)    
    except Exception as e:
         db.rollback()

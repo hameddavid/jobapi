@@ -8,28 +8,28 @@ def get_user(username: str, db: Session ):
     if Thisuser:      
         return User( id= Thisuser.id,username = Thisuser.username,  firstname = Thisuser.firstname,  
                  middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                   dateCreated = Thisuser.dateTimeCreated  )    
+                   dateTimeCreated = Thisuser.dateTimeCreated  )    
     raise HTTPException(status_code=404, detail=f"User(username={username}) not found")     
 def get_user_by_email(emailAddy: str, db: Session ):    
     Thisuser = db.query(Users).filter(func.trim(func.lower(Users.emailAddy)) == emailAddy.strip().lower()).first()
     if Thisuser:
         return User( id= Thisuser.id, username = Thisuser.username,  firstname = Thisuser.firstname,  
                  middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                   dateCreated = Thisuser.dateTimeCreated ) 
+                   dateTimeCreated = Thisuser.dateTimeCreated ) 
     raise HTTPException(status_code=404, detail=f"User(email={emailAddy}) not found")
 def get_user_ver2(username: str, db: Session ):    
     Thisuser = db.query(Users).filter(func.trim(func.lower(Users.username)) == username.strip().lower()).first()
     if Thisuser:      
         return User(id= Thisuser.id, username = Thisuser.username,  firstname = Thisuser.firstname,  
                  middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                   dateCreated = Thisuser.dateTimeCreated)  
+                   dateTimeCreated = Thisuser.dateTimeCreated)  
     return None
 def get_user_by_email_ver2(emailAddy: str, db: Session):    
     Thisuser = db.query(Users).filter(func.trim(func.lower(Users.emailAddy)) == emailAddy.strip().lower()).first()
     if Thisuser:
         return User( id = Thisuser.id, username = Thisuser.username,  firstname = Thisuser.firstname,  
                  middlename = Thisuser.middlename, lastname = Thisuser.lastname,emailAddy = Thisuser.emailAddy, 
-                   dateCreated = Thisuser.dateTimeCreated)
+                   dateTimeCreated = Thisuser.dateTimeCreated)
     return None    
 def get_users_all(skip:int, limit:int, db: Session ): 
     ''' 

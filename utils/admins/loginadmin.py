@@ -52,7 +52,7 @@ def LoginAdmin(payload: LoginAdmin, db: Session ):
           )       
        thisAdmin = Admin(id = ThisAdmin.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = ThisUser.lastname,emailAddy = ThisUser.emailAddy, 
-                        dateCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active) 
+                        dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active) 
        return AdminAUTH(admin = thisAdmin,
                         token = access_token)    
    except Exception as e: 

@@ -33,7 +33,7 @@ def ResetPasswordAdmin(payload: ResetPassword, db: Session ):
             db.delete(Token)     
        ret = Admin(id = ThisAdmin.id,username = ThisUser.username,  firstname =  ThisUser.firstname,  
                 middlename = ThisUser.middlename, lastname = ThisUser.lastname,emailAddy = ThisUser.emailAddy, 
-                dateCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active)  
+                dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active)  
        db.commit() 
        sendResetPasswordSuccessMsg(pToken , payload)        
        return ret    

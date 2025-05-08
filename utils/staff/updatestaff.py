@@ -25,7 +25,7 @@ def update_staff(staffUser: StaffUpdate, db: Session ) -> Staff:
     db.commit()   
     return Staff(id = ThisStaff.id, username = Thisuser.username,  firstname = staffUser.firstname,  
                     middlename = staffUser.middlename, lastname = staffUser.lastname,emailAddy = staffUser.emailAddy, 
-                    dateCreated = ThisStaff.dateTimeCreated, designation= ThisStaff.designation, 
+                    dateTimeCreated = ThisStaff.dateTimeCreated, designation= ThisStaff.designation, 
                     department = ThisStaff.department, is_Active=  ThisStaff.is_Active)     
    except Exception as e:
         db.rollback()
