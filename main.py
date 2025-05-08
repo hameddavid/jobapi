@@ -24,10 +24,13 @@ app = FastAPI(
 
 # Define the origins that are allowed to make requests
 origins = [
+    "http://172.21.22.219:3039/",  # Your React app's URL
     "http://localhost:3039",  # Your React app's URL
     "http://127.0.0.1:3039",  # Include this if using localhost with IP
     "http://jobs.run.edu.ng",
-    "http://jobs.run.edu.ng:80"
+    "http://jobs.run.edu.ng:80",
+    "http://192.168.0.102:3039/"
+    
 
    
 ]
