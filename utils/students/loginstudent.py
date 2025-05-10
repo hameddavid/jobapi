@@ -5,7 +5,7 @@ from models.accounts import Users, Students
 from schemas.general.login import  Login
 from schemas.students.student import Student, StudentAUTH
 import hashlib
-
+from utils.general.authentication import assign_roles_and_create_token
 import httpx
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -94,19 +94,15 @@ def LoginStudent(payload: Login, db: Session ):
        if ThisStudent.is_Active == False:
            raise HTTPException(status_code=404, detail=f"Student({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
        
-       from utils.general.authentication import   ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
-       from utils.general.authentication import Token, timedelta 
-       ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
-       access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-       access_token = create_access_token(
-        data={"sub": ThisUser.username}, expires_delta=access_token_expires
-          )
+       access_token = assign_roles_and_create_token(ThisUser, db)
+    #    get roles from access_token response
+       roles = access_token.pop("roles", [])
        #return {"access_token": access_token, "token_type": "bearer"}
        student= Student(id = ThisStudent.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = ThisUser.lastname,
                         emailAddy = ThisUser.emailAddy, programme = ThisStudent.programme, 
-                        level = ThisStudent.level, is_UG = True,
-                        dateTimeCreated = ThisStudent.dateTimeCreated, is_Active= ThisStudent.is_Active) 
+                        level = ThisStudent.level, is_UG = True, 
+                        dateTimeCreated = ThisStudent.dateTimeCreated, is_Active= ThisStudent.is_Active, roles= roles) 
 
        return StudentAUTH(student = student,
                         token = access_token)

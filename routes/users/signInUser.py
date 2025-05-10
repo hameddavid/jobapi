@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from utils.users.createuser import  create_user
 from models.database import  get_db
 from schemas.users.user import User
+from utils.general.authentication import assign_roles_and_create_token
 from schemas.users.usercreate import UserCreate 
 from  utils.general.authentication import  authenticate_user
 from fastapi.security import OAuth2PasswordRequestForm
@@ -34,9 +35,5 @@ async def do(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}     
+    return assign_roles_and_create_token(user, db )
+       

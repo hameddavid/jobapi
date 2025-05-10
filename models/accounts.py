@@ -60,3 +60,13 @@ class Admins(Base):
     user_id =  Column(Integer,  ForeignKey("users.id"), unique=True,nullable= False) 
                 # must be a user  (staff or student)
     user = relationship('Users', back_populates='admins')
+    super_admin = relationship('SuperAdmin', back_populates='admin')  #  one admin can have one super admin
+
+class SuperAdmin(Base):  
+    __tablename__ = 'super_admins'  #  they will use the admin dashboard
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)    
+    is_Active = Column(Boolean, default=False)  # not active by default
+    dateTimeCreated = Column(DateTime, default=datetime.utcnow)
+    admin_id =  Column(Integer,  ForeignKey("admins.id"), unique=True,nullable= False) 
+                # must be a user  (staff or student)
+    admin = relationship('Admins', back_populates='super_admin')

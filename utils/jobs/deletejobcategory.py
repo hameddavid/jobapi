@@ -18,7 +18,7 @@ def delete_job_category(cat_id: int,TheUser, db: Session ):
                 # Check if there are jobs associated with this category
                 raise HTTPException(status_code=400, detail="Cannot delete job category because it's already associated with jobs.")
                
-           if cat.createdBy != TheUser.id:
+           if cat.createdBy != TheUser.id and "admin" not in TheUser.roles:
                # Check if the user is not the creator and is not an admin
                raise HTTPException(status_code=403, detail="You do not have permission to update this job category.")
            db.delete(cat)

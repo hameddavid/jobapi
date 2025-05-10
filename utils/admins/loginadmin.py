@@ -4,6 +4,7 @@ from sqlalchemy import func
 from models.accounts import Users, Admins 
 from schemas.general.login import   LoginAdmin
 from schemas.admins.admin import Admin, AdminAUTH
+from utils.general.authentication import assign_roles_and_create_token
 import hashlib
 def LoginAdmin(payload: LoginAdmin, db: Session ):  
    try:   
@@ -43,21 +44,18 @@ def LoginAdmin(payload: LoginAdmin, db: Session ):
        _ , ThisAdmin =   ThisUserAndAdmin
        if not ThisAdmin.is_Active:
            raise HTTPException(status_code=404, detail=f"Admin({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
-       from utils.general.authentication import   create_access_token
-       from utils.general.authentication import Token, timedelta 
-       ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
-       access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-       access_token = create_access_token(
-        data={"sub": ThisUser.username}, expires_delta=access_token_expires
-          )       
+     
+       access_token = assign_roles_and_create_token(ThisUser, db)     
+       roles = access_token.pop("roles", [])
        thisAdmin = Admin(id = ThisAdmin.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = ThisUser.lastname,emailAddy = ThisUser.emailAddy, 
-                        dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active) 
+                        dateTimeCreated = ThisAdmin.dateTimeCreated, is_Active= ThisAdmin.is_Active, roles= roles) 
        return AdminAUTH(admin = thisAdmin,
                         token = access_token)    
    except Exception as e: 
         db.rollback()        
         raise e
+    
 def sendVerificationCodeToAdmin(ten_digit:str,payload:LoginAdmin):        
       from infrastructure.emailer  import  sendEmail   
       code = f"{ten_digit}{payload.emailAddy.strip().lower()}"

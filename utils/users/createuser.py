@@ -38,7 +38,7 @@ def create_user(user: UserCreate, db: Session):
         db.commit() 
         return User( id= db_user.id, username = user.username,  firstname = user.firstname,  
                     middlename = user.middlename, lastname = user.lastname,emailAddy = user.emailAddy, 
-                    dateTimeCreated = db_user.dateTimeCreated )
+                    dateTimeCreated = db_user.dateTimeCreated ,roles=["User"]) # returns the new user to the caller.
     except Exception as e:
         db.rollback()
         raise e

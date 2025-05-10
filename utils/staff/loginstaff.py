@@ -4,6 +4,7 @@ from sqlalchemy import func
 from models.accounts import Users, Staff as Staffs
 from schemas.general.login import  LoginStaff
 from schemas.staff.staff import Staff, StaffAUTH
+from utils.general.authentication import assign_roles_and_create_token
 from infrastructure.emailer import is_valid_email  
 from utils.general.getRunStaffProfile  import StaffProfile  
 def LoginStaff(payload: LoginStaff, db: Session ) -> StaffAUTH:  
@@ -48,18 +49,13 @@ def LoginStaff(payload: LoginStaff, db: Session ) -> StaffAUTH:
        _ , ThisStaff=   ThisUserAndStaff
        if not ThisStaff.is_Active:
            raise HTTPException(status_code=404, detail=f"Staff({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
-       from utils.general.authentication import   create_access_token
-       from utils.general.authentication import  timedelta 
-       ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
-       access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-       access_token = create_access_token(
-        data={"sub": ThisUser.username}, expires_delta=access_token_expires
-          )
+       access_token = assign_roles_and_create_token(ThisUser, db) 
+       roles = access_token.pop("roles", [])
        staff = Staff(id = ThisStaff.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = f"{ThisUser.lastname}",
                         emailAddy = f"{ThisUser.emailAddy}", dateTimeCreated = ThisUser.dateTimeCreated, 
                         designation= ThisStaff.designation, department= ThisStaff.department,
-                        is_Active= ThisStaff.is_Active)    
+                        is_Active= ThisStaff.is_Active, roles= roles)    
        return StaffAUTH(staff = staff,
                         token = access_token)
    except Exception as e: 

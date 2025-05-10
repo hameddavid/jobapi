@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
 from passlib.context import CryptContext
-from models.accounts import Users 
+from models.accounts import Users,Admins, Staff, Students, SuperAdmin 
 from schemas.users.user import User  
 from models.database import  get_db
 from .dependencies import oauth2_scheme 
+from typing import List
 import jwt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") 
 def get_password_hash(password):
@@ -56,6 +57,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        roles:list[str] = payload.get("roles")  # Get the roles from the token payload
         exp: int = payload.get("exp")  # Get the current expiration time         
         if username is None:
             raise credentials_exception         
@@ -80,7 +82,8 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
             middlename=ThisUser.middlename, 
             lastname=ThisUser.lastname,
             emailAddy=ThisUser.emailAddy, 
-            dateTimeCreated=ThisUser.dateTimeCreated
+            dateTimeCreated=ThisUser.dateTimeCreated,
+            roles=roles 
         )  
     except Exception as e:
         credentials_exception = HTTPException(
@@ -96,3 +99,63 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user 
+
+
+
+
+
+def assign_roles_and_create_token(user: Users, db: Session):
+    """
+    Determines user roles based on database records and creates an access token with those roles.
+    """
+    roles = []
+    role_checkers = [
+        (Students, "student", Students.user_id == user.id),
+        (Staff, "staff", Staff.user_id == user.id),
+        (Admins, "admin", Admins.user_id == user.id),
+    ]
+
+    for model, role_name, condition in role_checkers:
+        if db.query(model).filter(condition).first():
+            roles.append(role_name)
+
+    # Check for super admin role
+    if "admin" in roles:
+        admin = db.query(Admins).filter(Admins.user_id == user.id).first()
+        if admin and db.query(SuperAdmin).filter(SuperAdmin.admin_id == admin.id).first():
+            roles.append("super_admin")
+
+    if not roles:
+        raise HTTPException(
+            status_code=401, detail="N user role found."
+        )
+
+    ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Set token expiration to 1 hour
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username, "roles": roles},  # Include roles in the token
+        expires_delta=access_token_expires,
+    )
+    return {"access_token": access_token, "token_type": "bearer", "roles": roles}
+
+
+
+
+def user_required_roles(required_roles: List[str]):
+    """
+    Dependency factory to check if the current user has at least one of the required roles.
+    """
+    def roles_checker(TheUser: User = Depends(get_current_user)):
+        user_roles = TheUser.roles
+        for required_role in required_roles:
+            if required_role in user_roles:
+                return TheUser
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Access denied: one of {required_roles} roles required.",
+        )
+
+    return roles_checker
+
+
+

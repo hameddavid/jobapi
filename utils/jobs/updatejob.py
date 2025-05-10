@@ -10,7 +10,7 @@ def update_job(jobData:JobUpdate,TheUser, db: Session ):
        if jobQ is None:
            raise HTTPException(status_code=404, detail=f"Job with id {jobData.id} not found or does not belong to the user.")
        else:
-           if jobQ.user_id != TheUser.id :     # and TheUser.role != 'admin'
+           if jobQ.user_id != TheUser.id and "admin" not in TheUser.roles:
                # Check if the user is not the creator and is not an admin
                raise HTTPException(status_code=403, detail="You do not have permission to update this job category.")
            if jobData.title is not None:
