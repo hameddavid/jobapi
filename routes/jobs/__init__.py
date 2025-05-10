@@ -2,6 +2,7 @@
 
 from .router import router
 from . import createjob
+from . import getjob
 from . import createjobcategory
 from . import deletejob
 from . import deletejobcategory
