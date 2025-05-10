@@ -145,7 +145,7 @@ def list_jobs_with_filters(
         if category_id:
             query = query.filter(jobModel.job_category_id == category_id)
         if owner_id:
-            query = query.filter(jobModel.owner_id == owner_id)
+            query = query.filter(jobModel.user_id == owner_id)
         if date_from:
             query = query.filter(jobModel.dateTimeCreated >= date_from)
         if date_to:
