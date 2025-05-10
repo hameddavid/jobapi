@@ -95,7 +95,7 @@ def LoginStudent(payload: Login, db: Session ):
            raise HTTPException(status_code=404, detail=f"Student({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
        
        access_token = assign_roles_and_create_token(ThisUser, db)
-    #    get roles from access_token response
+    
        roles = access_token.pop("roles", [])
        #return {"access_token": access_token, "token_type": "bearer"}
        student= Student(id = ThisStudent.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
