@@ -31,12 +31,12 @@ def search_jobs(
     date_from: Optional[datetime] = Query(
         default=None,
         description="",
-        example="YYYY-MM-DD orYYYY-MM-DDTHH:MM:SS",
+        example="2025-05-01",  
     ),
     date_to: Optional[datetime] = Query(
         default=None,
         description="",
-        example="YYYY-MM-DD orYYYY-MM-DDTHH:MM:SS",
+        example="2025-05-31",
     ),
 ):
     return getjob.list_jobs_with_filters(
