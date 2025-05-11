@@ -1,10 +1,11 @@
 from models.jobs import jobs as jobModel, jobCategory as JobCategoryModel
+from models.accounts import Users as UserModel
 from schemas.jobs.job import ListJobSchema
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
 from schemas.users.user import User as UserSchema
 from typing import List, Optional
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func,or_
 from fastapi import Query
 
 from fastapi import   HTTPException
@@ -123,8 +124,8 @@ def list_jobs_with_filters(
     db: Session,
     skip: int = Query(0, ge=0,),
     limit: int = Query(50, ge=1,),
-    category_id: Optional[int] = None,
-    owner_id: Optional[int] = None,
+    category: Optional[str] = None,
+    owner: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
     job_name: Optional[str] = None,
@@ -142,10 +143,37 @@ def list_jobs_with_filters(
         )
 
         # Apply filters dynamically
-        if category_id:
-            query = query.filter(jobModel.job_category_id == category_id)
-        if owner_id:
-            query = query.filter(jobModel.user_id == owner_id)
+                # Apply filters dynamically
+        if category:
+            category_filters = []
+            # Try to treat category as an integer ID
+            try:
+                category_id_int = int(category)
+                category_filters.append(JobCategoryModel.id == category_id_int)
+            except ValueError:
+                # If not an integer, treat as name or description
+                category_filters.append(func.lower(JobCategoryModel.name).contains(category.lower()))
+                category_filters.append(func.lower(JobCategoryModel.description).contains(category.lower()))
+
+            if category_filters:
+                query = query.filter(jobModel.job_category.has(or_(*category_filters)))
+
+        if owner:
+            owner_filters = []
+            try:
+                owner_id_int = int(owner)
+                owner_filters.append(UserModel.id == owner_id_int)
+            except ValueError:
+                owner_filters.extend([
+                    func.lower(UserModel.username).contains(owner.lower()),
+                    func.lower(UserModel.emailAddy).contains(owner.lower()),
+                    func.lower(UserModel.firstname).contains(owner.lower()),
+                    func.lower(UserModel.middlename).contains(owner.lower()),
+                    func.lower(UserModel.lastname).contains(owner.lower()),
+                ])
+            if owner_filters:
+                query = query.filter(jobModel.owner.has(or_(*owner_filters)))
+                
         if date_from:
             query = query.filter(jobModel.dateTimeCreated >= date_from)
         if date_to:
@@ -194,4 +222,4 @@ def list_jobs_with_filters(
         return job_list
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing jobs with filters: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"No listing jobs with filters: {str(e)}")
