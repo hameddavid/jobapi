@@ -7,7 +7,6 @@ from schemas.users.user import User
 from utils.general.authentication import get_current_user
 from typing import  Optional
 from datetime import datetime
-from pydantic import  Field
 from .router import router
 
 @router.get("/getjob", include_in_schema=True, response_model=ListJobSchema)
@@ -21,6 +20,7 @@ async def do(job_id: int,
 @router.get("/searchjobs", response_model=list[ListJobSchema])
 def search_jobs(
     db: Session = Depends(get_db),
+    TheUser: User = Depends(get_current_user),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1),
     category_id: Optional[int] = None,

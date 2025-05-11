@@ -10,3 +10,4 @@ from . import listjob
 from . import listjobcategory
 from . import updatejob
 from . import updatejobcategory
+from . import searchjobcategory
