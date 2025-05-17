@@ -13,7 +13,7 @@ from routes.staff import createstaff, getstaff, updatestaff, loginstaff
 from routes.admins import createadmin, getadmin, sendpassresetlinkadmin,updateadmin, activateadmin
 from routes.admins import verifyadmin, resetpasswordadmin, loginadmin
 from routes import jobs
-from routes.applications import getapplication
+from routes import applications
 import asyncio 
 app = FastAPI(
      title="JobPosting - Redeemer's University",
@@ -76,9 +76,9 @@ app.include_router(verifyadmin.router, tags=["Admins"])
  
 
 app.include_router(jobs.router,prefix="/job", tags=["Jobs"])
+app.include_router(applications.router, prefix="/apps", tags=["Applications"])
 
 
-app.include_router(getapplication.router, tags=["Jobs.Applications"]) 
 
 @app.get("/", tags=["General"])
 async def read_root():

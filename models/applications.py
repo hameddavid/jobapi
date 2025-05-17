@@ -1,8 +1,18 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey 
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
 from datetime import datetime
 from .database import Base  
 from .jobs import jobs
+from sqlalchemy.orm import relationship
+
+class AppStatus(Enum):
+    SUBMITTED = "SUBMITTED"
+    REVIEWING = "REVIEWING"
+    SHORTLISTED = "SHORTLISTED"
+    INTERVIEWING = "INTERVIEWING"
+    OFFERED = "OFFERED"
+    REJECTED = "REJECTED"
+    
 class applications(Base):  #  user may post more than one jobs
     __tablename__ = 'applications'  #  
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -12,7 +22,18 @@ class applications(Base):  #  user may post more than one jobs
     doc_2 = Column(String(200), nullable=True)  # path to doc on filesystem...may be empty
     doc_3 = Column(String(200), nullable=True)  # path to doc on filesystem...may be empty
     image = Column(String(200), nullable=True)  # path to image on filesystem...may be empty
-    status = Column(Integer,default=1)  #  0 -> deactivated , 1 -> activated
+    suitable_price = Column(Integer, nullable=True)  #  amount expectations
+    status =  Column(SQLAlchemyEnum(AppStatus), default=AppStatus.SUBMITTED, nullable=False) 
+    rejection_reason = Column(String(500), nullable=True)  # reason for rejection
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
+    dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
     job_id =  Column(Integer,  ForeignKey("jobs.id"), unique=True,nullable= False) # associated with a job  
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
+    job = relationship("jobs", back_populates="applications")  #  job associated with this application
+    user = relationship("Users", back_populates="applications")  #  user associated with this application
+    
+    
+    
+    
+    
+   

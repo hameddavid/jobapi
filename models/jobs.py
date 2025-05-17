@@ -1,11 +1,25 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey 
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
 from datetime import datetime
 from .database import Base  
 from sqlalchemy.orm import Session 
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from sqlalchemy.orm import relationship
+
+class JobStatus(Enum):
+    ARCHIVED = "ARCHIVED"
+    AWAITING_APPROVAL = "AWAITING_APPROVAL"
+    AWAITING_PAYMENT = "AWAITING_PAYMENT"
+    CLOSED = "CLOSED"
+    COMPLETED = "COMPLETED"
+    DELETED = "DELETED"
+    IN_PROGRESS = "IN_PROGRESS"
+    OPEN = "OPEN"
+    PAID = "PAID"
+    PENDING = "PENDING"
+    REJECTED = "REJECTED"
+
 class jobs(Base):  #  user may post more than one jobs
     __tablename__ = 'jobs'  #  
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -13,13 +27,20 @@ class jobs(Base):  #  user may post more than one jobs
     description = Column(String(200), nullable=False)  #
     location = Column(String(50), nullable=False)  #  location of the job
     listed_price = Column(Integer, nullable=False)  #  price of the job
-    status = Column(Integer,default=0)  #  job is closed by default until admin opens it
+    status = Column(SQLAlchemyEnum(JobStatus), default=JobStatus.PENDING, nullable=False)  #  job is closed by default until admin opens it
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
+    dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
+    dateTimeJobStarted = Column(DateTime, default=None)
+    dateTimeJobCompleted = Column(DateTime, default=None)
+    dateTimeJobClosed = Column(DateTime, default=None)
+    dateTimePaymentMade = Column(DateTime, default=None)
+    dateTimePaymentConfirmed = Column(DateTime, default=None)
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
     job_category_id = Column(Integer, ForeignKey("jobCategory.id"), nullable= False)  #  job category
     deleted = Column(String(1), default='N')  #  job is deleted by default until admin deletes it
     owner = relationship("Users", back_populates="jobs")  #  user who posted the job
     job_category = relationship("jobCategory", back_populates="jobs")  #  job category
+    applications = relationship("applications", back_populates="job")  #  applications for the job
     
     
     def get_owner(self, db: Session):
@@ -51,3 +72,6 @@ class jobCategory(Base):  #  Job category
     @is_deleted.setter
     def is_deleted(self, value):
         self.deleted = 'Y' if value else 'N'
+        
+
+

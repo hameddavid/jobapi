@@ -1,6 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict,Field
 from datetime import datetime
-
+from models.jobs import JobStatus
 
 from schemas.users.user import User
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
@@ -14,7 +14,7 @@ class Job(BaseModel):
     description: str  
     location: str
     listed_price: float
-    status:int
+    status:JobStatus
     user_id:  int    #   he posted the job
     job_category_id: int
     dateTimeCreated: datetime
@@ -33,7 +33,7 @@ class JobCreate(BaseModel):
 
 class JobUpdate(JobCreate):
     id: int
-    status: int
+    status: JobStatus
     deleted: str = 'N'
     
 class ListJobSchema(BaseModel):
@@ -42,7 +42,7 @@ class ListJobSchema(BaseModel):
     description: str  
     location: str
     listed_price: float
-    status:int
+    status:JobStatus
     owner:  User    #   he posted the job
     category: GetJobCategorySchema
     dateTimeCreated: datetime

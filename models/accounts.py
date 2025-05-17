@@ -22,6 +22,7 @@ class Users(Base):
     admins = relationship('Admins', back_populates='user')
     jobs = relationship("jobs", back_populates="owner")  #  user who posted the job
     job_category = relationship("jobCategory", back_populates="user")  #  user who created the job category
+    applications = relationship("applications", back_populates="user")  #  user who applied for the job
     
 class vTokens(Base):  # verification tokens are stored in this table per Users account
     __tablename__ =  'vTokens'

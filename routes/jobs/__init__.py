@@ -11,3 +11,4 @@ from . import listjobcategory
 from . import updatejob
 from . import updatejobcategory
 from . import searchjobcategory
+from . import getjobbystatus
