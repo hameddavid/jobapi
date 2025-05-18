@@ -12,6 +12,57 @@ from fastapi import   HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 
+def list_user_jobs_by_admin(user_id: int, skip: int, limit: int, db: Session) -> List[ListJobSchema]:
+ 
+    try:
+        # Eagerly load the 'owner' and 'job_category' relationships, and 'job_category.user'
+        job_query = (
+            db.query(jobModel)
+            .options(
+                joinedload(jobModel.owner),
+                joinedload(jobModel.job_category).joinedload(JobCategoryModel.user) # Eager load user of category
+            )
+            .filter(jobModel.user_id == user_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        if not job_query:
+            raise HTTPException(status_code=404, detail=f"Jobs (skip={skip}, limit={limit}) not found")
+
+        job_list: List[ListJobSchema] = []
+        for job in job_query:
+            owner_data = UserSchema.model_validate(job.owner)
+            cat_owner = UserSchema.model_validate(job.job_category.user)  # Eagerly loaded user of category
+            category_data = GetJobCategorySchema.model_validate({
+                "id": job.job_category.id,
+                "name": job.job_category.name,
+                "description": job.job_category.description,
+                "deleted": job.job_category.deleted,
+                "createdBy": cat_owner,  
+                "createdAt": job.job_category.createdAt,
+                "updatedAt": job.job_category.updatedAt,
+            })
+            this_job = ListJobSchema.model_validate({
+                "id": job.id,
+                "title": job.title,
+                "description": job.description,
+                "listed_price": job.listed_price,
+                "location": job.location,
+                "owner": owner_data,
+                "category": category_data,
+                "dateTimeCreated": job.dateTimeCreated,
+                "status": job.status,
+                "deleted": job.deleted,
+            })
+            job_list.append(this_job)
+        return job_list
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Listing jobs: {str(e)}")
+
+
 
 def list_jobs(skip: int, limit: int, db: Session) -> List[ListJobSchema]:
  
@@ -60,7 +111,7 @@ def list_jobs(skip: int, limit: int, db: Session) -> List[ListJobSchema]:
         return job_list
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Listing jobs: {str(e)}")
 
 
 def get_job_by_status(status: JobStatus, db: Session) -> List[ListJobSchema]:
@@ -105,7 +156,7 @@ def get_job_by_status(status: JobStatus, db: Session) -> List[ListJobSchema]:
             job_list.append(this_job)
         return job_list
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing jobs by status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Listing jobs by status: {str(e)}")
 
 
 
@@ -157,7 +208,7 @@ def get_job_by_id(job_id: int, db: Session) -> ListJobSchema:
         return job_data
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving job: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Retrieving job: {str(e)}")
     
     
     

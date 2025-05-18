@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey,En
 from datetime import datetime
 from .database import Base  
 from .jobs import jobs
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 class AppStatus(Enum):
@@ -27,13 +28,16 @@ class applications(Base):  #  user may post more than one jobs
     rejection_reason = Column(String(500), nullable=True)  # reason for rejection
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
     dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
-    job_id =  Column(Integer,  ForeignKey("jobs.id"), unique=True,nullable= False) # associated with a job  
+    deleted = Column(String(1), default='N')  #  Y or N
+    job_id =  Column(Integer,  ForeignKey("jobs.id"),nullable= False) # associated with a job  
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
     job = relationship("jobs", back_populates="applications")  #  job associated with this application
     user = relationship("Users", back_populates="applications")  #  user associated with this application
     
     
-    
+    __table_args__ = (
+        UniqueConstraint('job_id', 'user_id', name='unique_user_per_job'),
+    )
     
     
    
