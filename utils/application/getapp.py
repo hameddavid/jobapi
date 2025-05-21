@@ -10,6 +10,76 @@ from models.jobs import jobs as jobModel, jobCategory as JobCategoryModel
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
 
 
+
+def get_app_by_job_id(job_id: int,user: UserSchema,skip,limit, db: Session) -> GetAppSchema:
+    try:
+        # Eager loading of the user and job relationship
+        appQ = (
+            db.query(appModel)
+            .options(joinedload(appModel.user),
+                     joinedload(appModel.job).joinedload(jobModel.owner),
+                     joinedload(appModel.job).joinedload(jobModel.job_category).joinedload(JobCategoryModel.user)
+                     )
+            .filter(appModel.deleted == 'N')
+            .filter(appModel.job_id == job_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+        if not appQ:
+            raise HTTPException(status_code=404, detail=f"applications (skip={skip}, limit={limit}) not found")
+        appList: List[GetAppSchema] = []
+        for app in appQ:
+            app_owner = UserSchema.model_validate(app.user)
+            job_owner = UserSchema.model_validate(app.job.owner)
+            cat_owner = UserSchema.model_validate(app.job.job_category.user)
+            job_cat =  GetJobCategorySchema.model_validate({
+                "id": app.job.job_category.id,
+                "name": app.job.job_category.name,
+                "description": app.job.job_category.description,
+                "deleted": app.job.job_category.deleted,
+                "createdBy": cat_owner,  
+                "createdAt": app.job.job_category.createdAt,
+                "updatedAt": app.job.job_category.updatedAt,
+            })
+            job = ListJobSchema.model_validate({
+                "id": app.job.id,
+                "title": app.job.title,
+                "description": app.job.description,
+                "listed_price": app.job.listed_price,
+                "location": app.job.location,
+                "owner": job_owner,
+                "category": job_cat,
+                "dateTimeCreated": app.job.dateTimeCreated,
+                "status": app.job.status,
+                "deleted": app.job.deleted,
+            })
+            apps = GetAppSchema.model_validate({
+                "id": app.id,
+                "title": app.title,
+                "narration": app.narration,
+                "doc_1": app.doc_1,
+                "doc_2": app.doc_2,
+                "doc_3": app.doc_3,
+                "image": app.image,
+                "suitable_price": app.suitable_price,
+                "rejection_reason": app.rejection_reason,
+                "job": job,
+                "owner": app_owner,
+                "status": app.status,
+                "dateTimeCreated": app.dateTimeCreated,
+                "dateTimeUpdated": app.dateTimeUpdated,
+            })
+            appList.append(apps)
+        return appList
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=404, detail=f"Listing applications : {str(e)})")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=404, detail=f"Listing applications : {str(e)})")
+
+
 def get_app_by_id(app_id: int,user: UserSchema, db: Session) -> GetAppSchema:
     try:
         appQ = (

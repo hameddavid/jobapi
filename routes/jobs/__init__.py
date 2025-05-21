@@ -13,3 +13,5 @@ from . import updatejobcategory
 from . import searchjobcategory
 from . import getjobbystatus
 from . import list_user_jobs_by_admin
+from . import searchjob
+from . import allocate_job

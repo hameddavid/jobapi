@@ -19,28 +19,26 @@ class JobStatus(Enum):
     PAID = "PAID"
     PENDING = "PENDING"
     REJECTED = "REJECTED"
+    SUBMITTED = "SUBMITTED"
 
 class jobs(Base):  #  user may post more than one jobs
     __tablename__ = 'jobs'  #  
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String(50), nullable=False) #  
     description = Column(String(200), nullable=False)  #
+    keywords = Column(String(200), nullable=False)  #  keywords for the job
     location = Column(String(50), nullable=False)  #  location of the job
     listed_price = Column(Integer, nullable=False)  #  price of the job
-    status = Column(SQLAlchemyEnum(JobStatus), default=JobStatus.PENDING, nullable=False)  #  job is closed by default until admin opens it
+    status = Column(SQLAlchemyEnum(JobStatus), default=JobStatus.SUBMITTED, nullable=False)  #  job is closed by default until admin opens it
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
     dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
-    dateTimeJobStarted = Column(DateTime, default=None)
-    dateTimeJobCompleted = Column(DateTime, default=None)
-    dateTimeJobClosed = Column(DateTime, default=None)
-    dateTimePaymentMade = Column(DateTime, default=None)
-    dateTimePaymentConfirmed = Column(DateTime, default=None)
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
     job_category_id = Column(Integer, ForeignKey("jobCategory.id"), nullable= False)  #  job category
     deleted = Column(String(1), default='N')  #  job is deleted by default until admin deletes it
     owner = relationship("Users", back_populates="jobs")  #  user who posted the job
     job_category = relationship("jobCategory", back_populates="jobs")  #  job category
     applications = relationship("applications", back_populates="job")  #  applications for the job
+    
     
     
     def get_owner(self, db: Session):
@@ -52,6 +50,21 @@ class jobs(Base):  #  user may post more than one jobs
          
     
 
+class JobAllocation(Base):
+    #  user may post more than one jobs 
+    __tablename__ = 'jobAllocation'  #
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), nullable=False) 
+    dateTimeJobStarted = Column(DateTime, nullable=False)
+    dateTimeJobCompleted = Column(DateTime, default=None)
+    dateTimeJobClosed = Column(DateTime, default=None)
+    dateTimePaymentMade = Column(DateTime, default=None)
+    dateTimePaymentConfirmed = Column(DateTime, default=None)
+    paymentReceiptURL = Column(String(200), nullable=True)  #  payment receipt
+    dateTimeCreated = Column(DateTime, default=datetime.utcnow)
+    dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
+    applications = relationship("applications", back_populates="job_allocation")  
+    deleted = Column(String(1), default='N') 
 
 class jobCategory(Base):  #  Job category
     __tablename__ = 'jobCategory'  #  

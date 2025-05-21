@@ -27,6 +27,7 @@ class JobCreate(BaseModel):
     title: str
     description: str  
     location: str
+    keywords: str
     listed_price: float
     cat_id: int
      

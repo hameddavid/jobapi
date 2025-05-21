@@ -33,6 +33,7 @@ class applications(Base):  #  user may post more than one jobs
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
     job = relationship("jobs", back_populates="applications")  #  job associated with this application
     user = relationship("Users", back_populates="applications")  #  user associated with this application
+    job_allocation = relationship("JobAllocation", back_populates="applications")  #  job allocation for the application
     
     
     __table_args__ = (

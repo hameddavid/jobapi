@@ -12,6 +12,7 @@ def create_job(job: JobCreate, ThisUser:User, db: Session ):
             description =  str(job.description).capitalize(),
             listed_price = job.listed_price,
             location = job.location,
+            keywords = job.keywords,
             job_category_id = job.cat_id,
             user_id = ThisUser.id
         )
