@@ -15,3 +15,4 @@ from . import getjobbystatus
 from . import list_user_jobs_by_admin
 from . import searchjob
 from . import allocate_job
+from . import list_user_jobs_by_user_type

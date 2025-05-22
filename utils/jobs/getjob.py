@@ -1,15 +1,84 @@
 from models.jobs import jobs as jobModel, jobCategory as JobCategoryModel, JobStatus
-from models.accounts import Users as UserModel
+from models.accounts import Users as UserModel, Staff, Students  
 from schemas.jobs.job import ListJobSchema
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
-from schemas.users.user import User as UserSchema
+from schemas.users.user import User as UserSchema, UserType
 from typing import List, Optional
 from datetime import datetime
-from sqlalchemy import func,or_
+from sqlalchemy import func,or_,select
 from fastapi import Query
 
 from fastapi import   HTTPException
 from sqlalchemy.orm import Session, joinedload
+
+
+
+
+
+
+
+def get_jobs_by_user_type(user_type: UserType, skip: int, limit: int, db: Session) -> List[ListJobSchema]:
+   
+    try:
+        # Eagerly load the 'owner' and 'job_category' relationships, and 'job_category.user'
+        subquery = ()
+        if user_type == UserType.STUDENT:
+            subquery =  (
+                    select(Students.user_id).scalar_subquery() # Use .scalar_subquery() for a single column subquery
+                    )
+        elif user_type == UserType.STAFF:
+            subquery =  (
+                    select(Staff.user_id).scalar_subquery() # Use .scalar_subquery() for a single column subquery
+                    )
+        else:
+            pass
+    
+        job_query = (
+            db.query(jobModel)
+            .options(
+                joinedload(jobModel.owner),
+                joinedload(jobModel.job_category).joinedload(JobCategoryModel.user) # Eager load user of category
+            )
+            .filter(jobModel.user_id.in_(subquery))  # Use the subquery here
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+        if not job_query:
+            raise HTTPException(status_code=404, detail=f"Jobs (skip={skip}, limit={limit}) not found")
+
+        job_list: List[ListJobSchema] = []
+        for job in job_query:
+            owner_data = UserSchema.model_validate(job.owner)
+            cat_owner = UserSchema.model_validate(job.job_category.user)  # Eagerly loaded user of category
+            category_data = GetJobCategorySchema.model_validate({
+                "id": job.job_category.id,
+                "name": job.job_category.name,
+                "description": job.job_category.description,
+                "deleted": job.job_category.deleted,
+                "createdBy": cat_owner,  
+                "createdAt": job.job_category.createdAt,
+                "updatedAt": job.job_category.updatedAt,
+            })
+            this_job = ListJobSchema.model_validate({
+                "id": job.id,
+                "title": job.title,
+                "description": job.description,
+                "listed_price": job.listed_price,
+                "location": job.location,
+                "owner": owner_data,
+                "category": category_data,
+                "dateTimeCreated": job.dateTimeCreated,
+                "status": job.status,
+                "deleted": job.deleted,
+            })
+            job_list.append(this_job)
+        return job_list
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Listing jobs: {str(e)}")
+
 
 
 def list_user_jobs_by_admin(user_id: int, skip: int, limit: int, db: Session) -> List[ListJobSchema]:

@@ -8,6 +8,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 class JobStatus(Enum):
+    ACCEPTED = "ACCEPTED"
+    ALLOCATED = "ALLOCATED"
     ARCHIVED = "ARCHIVED"
     AWAITING_APPROVAL = "AWAITING_APPROVAL"
     AWAITING_PAYMENT = "AWAITING_PAYMENT"
@@ -54,10 +56,11 @@ class JobAllocation(Base):
     #  user may post more than one jobs 
     __tablename__ = 'jobAllocation'  #
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    application_id = Column(Integer, ForeignKey("applications.id"), nullable=False) 
+    application_id = Column(Integer, ForeignKey("applications.id"),unique=True, nullable=False) 
     dateTimeJobStarted = Column(DateTime, nullable=False)
     dateTimeJobCompleted = Column(DateTime, default=None)
     dateTimeJobClosed = Column(DateTime, default=None)
+    proposedDateTimeJobClosed = Column(DateTime, default=None)
     dateTimePaymentMade = Column(DateTime, default=None)
     dateTimePaymentConfirmed = Column(DateTime, default=None)
     paymentReceiptURL = Column(String(200), nullable=True)  #  payment receipt
