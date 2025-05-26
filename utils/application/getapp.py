@@ -1,6 +1,7 @@
 from fastapi import   HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from typing import List
 from schemas.users.user import User as UserSchema
 from schemas.jobs.job import ListJobSchema
@@ -8,6 +9,17 @@ from schemas.apps.appschema import GetAppSchema
 from models.applications import applications as appModel
 from models.jobs import jobs as jobModel, jobCategory as JobCategoryModel
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
+
+
+
+def get_apps_numb_for_job(job_id: int, db: Session):
+    try:
+        appQ =  db.query(func.count(appModel.id)).filter(
+                        appModel.deleted == 'N' ).filter(appModel.job_id == job_id).scalar()
+        return appQ
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=404, detail=f"Listing applications : {str(e)})")
 
 
 
