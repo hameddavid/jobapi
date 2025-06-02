@@ -6,7 +6,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from routes.general  import   shout
+from routes import general  
 from routes.users  import   createuser, signInUser, updateuser,  deleteuser
 from routes.students import createstudent, getstudent, updatestudent, loginstudent
 from routes.staff import createstaff, getstaff, updatestaff, loginstaff
@@ -45,7 +45,7 @@ app.add_middleware(
 )
 
 
-# app.include_router(shout.router, tags=["General"]) 
+
 
 # app.include_router(createuser.router, tags=["AUTH"])
 app.include_router(signInUser.router, tags=["AUTH"]) 
@@ -77,9 +77,11 @@ app.include_router(verifyadmin.router, tags=["Admins"])
 
 app.include_router(jobs.router,prefix="/job", tags=["Jobs"])
 app.include_router(applications.router, prefix="/apps", tags=["Applications"])
+app.include_router(general.router, prefix="/general", tags=["General"])
 
 
 
-@app.get("/", tags=["General"])
+
+@app.get("/", tags=["Index"])
 async def read_root():
     return {"Sup 1!"} 

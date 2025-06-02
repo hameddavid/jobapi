@@ -1,11 +1,11 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
+from sqlalchemy import Column,and_, or_, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
 from datetime import datetime
 from .database import Base  
 from sqlalchemy.orm import Session 
 from sqlalchemy.ext.hybrid import hybrid_property
-
-from sqlalchemy.orm import relationship
+from models.notificationComplaint import NotificationComplaint
+from sqlalchemy.orm import relationship, foreign
 
 class JobStatus(Enum):
     ACCEPTED = "ACCEPTED"
@@ -40,7 +40,16 @@ class jobs(Base):  #  user may post more than one jobs
     owner = relationship("Users", back_populates="jobs")  #  user who posted the job
     job_category = relationship("jobCategory", back_populates="jobs")  #  job category
     applications = relationship("applications", back_populates="job")  #  applications for the job
-    
+    notifications =  relationship(
+        'NotificationComplaint',
+        primaryjoin= and_(
+            id == foreign(NotificationComplaint.target_id), # <-- Correct use of foreign()
+            NotificationComplaint.target_type == 'application'
+        ),
+        viewonly=True,
+        uselist=True,
+        order_by=NotificationComplaint.dateTimeCreated.desc()
+    )
     
     
     def get_owner(self, db: Session):

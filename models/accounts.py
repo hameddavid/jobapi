@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime,ForeignKey 
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Boolean, DateTime,ForeignKey,and_, or_
+from sqlalchemy.orm import relationship, foreign
 from datetime import datetime
 from .database import Base 
+from models.notificationComplaint import NotificationComplaint
 from .jobs import jobs, jobCategory  #  import jobs and jobCategory models
+
 
 class Users(Base):
     __tablename__ = 'users'
@@ -23,7 +25,19 @@ class Users(Base):
     jobs = relationship("jobs", back_populates="owner")  #  user who posted the job
     job_category = relationship("jobCategory", back_populates="user")  #  user who created the job category
     applications = relationship("applications", back_populates="user")  #  user who applied for the job
-   
+    sent_notifications_complaints  = relationship('NotificationComplaint', back_populates='sender')  #  user who sent the notification or complaint
+    notification_receipts = relationship('UserNotificationReceipt',back_populates='user')  #  user who received the notification or complaint receipts
+    target_notifications = relationship(
+        'NotificationComplaint',
+        primaryjoin= and_(
+            id == foreign(NotificationComplaint.target_id), # <-- Correct use of foreign()
+            NotificationComplaint.target_type == 'user'
+        ),
+        viewonly=True,
+        uselist=True,
+        order_by=NotificationComplaint.dateTimeCreated.desc()
+    )
+    
     
 class vTokens(Base):  # verification tokens are stored in this table per Users account
     __tablename__ =  'vTokens'

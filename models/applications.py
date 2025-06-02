@@ -1,10 +1,11 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
+from sqlalchemy import Column,and_, or_, Integer, String, Boolean, DateTime, ForeignKey,Enum as SQLAlchemyEnum
 from datetime import datetime
 from .database import Base  
 from .jobs import jobs
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, foreign
+from models.notificationComplaint import NotificationComplaint
 
 class AppStatus(Enum):
     SUBMITTED = "SUBMITTED"
@@ -34,6 +35,17 @@ class applications(Base):  #  user may post more than one jobs
     job = relationship("jobs", back_populates="applications")  #  job associated with this application
     user = relationship("Users", back_populates="applications")  #  user associated with this application
     job_allocation = relationship("JobAllocation", back_populates="applications")  #  job allocation for the application
+    notifications = relationship(
+        'NotificationComplaint',
+        primaryjoin= and_(
+            id == foreign(NotificationComplaint.target_id), # <-- Correct use of foreign()
+            NotificationComplaint.target_type == 'application'
+        ),
+        viewonly=True,
+        uselist=True,
+        order_by=NotificationComplaint.dateTimeCreated.desc()
+    )
+   
     
     
     __table_args__ = (
