@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict,Field
+from fastapi import UploadFile, File, Form
 from datetime import datetime
 from models.jobs import JobStatus
 
@@ -15,6 +16,7 @@ class Job(BaseModel):
     location: str
     listed_price: float
     status:JobStatus
+    doc_1: str
     user_id:  int    #   he posted the job
     job_category_id: int
     dateTimeCreated: datetime
@@ -29,6 +31,7 @@ class JobCreate(BaseModel):
     location: str
     keywords: str
     listed_price: float
+    doc_1: UploadFile = File(..., description="Your resume document (PDF, DOCX, jpeg.)"),
     cat_id: int
      
 

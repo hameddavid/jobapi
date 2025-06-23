@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.notificationComplaint import NotificationComplaint 
 from schemas.users.user import User
+from schemas.general.deletion import SoftDeletion
+
 
 
 
@@ -39,3 +41,24 @@ def delete_communication(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred during deletion: {e}"
         )
+        
+    
+# toggle_step_down_notification
+
+
+def toggle_step_down_notification(noti_id: int, delStatus: SoftDeletion ,TheUser:User, db: Session ):  
+    try:
+       notiObj = db.query(NotificationComplaint).filter(NotificationComplaint.id == noti_id).first()
+       if notiObj is None:
+           raise HTTPException(status_code=404, detail=f"Notification  with id {noti_id} not found.")
+       if  "admin" not in TheUser.roles:
+               # Check if the user is not the creator and is not an admin
+           raise HTTPException(status_code=403, detail="You do not have permission to stepdown this notification.")
+       
+       notiObj.deleted = delStatus.value
+       db.commit()
+       db.refresh(notiObj)
+       return notiObj
+    except Exception as e:
+        db.rollback()        
+        raise HTTPException(status_code=404, detail=f"Toggling notification : {str(e)})") 

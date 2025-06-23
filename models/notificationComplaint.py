@@ -41,6 +41,7 @@ class NotificationComplaint(Base):
     # Polymorphic target columns
     target_id = Column(Integer, nullable=True)  # Can be FK to job, application, or user
     target_type = Column(String(50), nullable=True) # 'job', 'application', 'user', 'none' for general system messages
+    deleted = Column(String(1), default='N')     
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
     dateTimeUpdated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

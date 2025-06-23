@@ -14,6 +14,8 @@ from routes.admins import createadmin, getadmin, sendpassresetlinkadmin,updatead
 from routes.admins import verifyadmin, resetpasswordadmin, loginadmin
 from routes import jobs
 from routes import applications
+from routes import rating
+
 import asyncio 
 app = FastAPI(
      title="JobPosting - Redeemer's University",
@@ -78,6 +80,7 @@ app.include_router(verifyadmin.router, tags=["Admins"])
 app.include_router(jobs.router,prefix="/job", tags=["Jobs"])
 app.include_router(applications.router, prefix="/apps", tags=["Applications"])
 app.include_router(general.router, prefix="/general", tags=["General"])
+app.include_router(rating.router, prefix="/rating", tags=["Rating"])
 
 
 
