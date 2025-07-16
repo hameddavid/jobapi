@@ -64,10 +64,10 @@ class GetAppSchema(BaseModel):
     id: int  
     title: str
     narration: str  
-    doc_1: str
-    doc_2: str
-    doc_3: str
-    image: str
+    doc_1: Optional[str] = None
+    doc_2: Optional[str] = None
+    doc_3: Optional[str] = None
+    image: Optional[str] = None
     suitable_price: float
     status:AppStatus
     rejection_reason: Optional[str] = None

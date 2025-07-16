@@ -55,3 +55,16 @@ class ListJobSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     # class Config:
     #     orm_mode = True
+    
+    
+class SimpleJobSchema(BaseModel):
+    id: int  
+    title: str
+    description: str  
+    location: str
+    listed_price: float
+    status:JobStatus
+    dateTimeCreated: datetime
+    deleted: str = 'N'
+    
+    model_config = ConfigDict(from_attributes=True)

@@ -1,4 +1,5 @@
 from .router import router
 
-from . import createRating
-from . import deleteRating
+from . import create_rating
+from . import delete_rating
+from . import get_rating
