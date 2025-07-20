@@ -1,10 +1,8 @@
-from fastapi import FastAPI
-from fastapi import FastAPI, Depends
-from fastapi.openapi.models import OAuthFlows, SecurityScheme
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel, OAuthFlowPassword
+from fastapi import FastAPI, Depends,Request
+from fastapi.openapi.models import SecurityScheme, OAuthFlows as OAuthFlowsModel, OAuthFlowPassword
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 
 from routes import general  
 from routes.users  import   createuser, signInUser, updateuser,  deleteuser
@@ -88,3 +86,21 @@ app.include_router(rating.router, prefix="/rating", tags=["Rating"])
 @app.get("/", tags=["Index"])
 async def read_root():
     return {"Sup 1!"} 
+
+
+# List of allowed IP addresses
+ALLOWED_IPS = ["162.214.155.50"]  # Replace with your allowed IPs
+
+@app.middleware("http")
+async def restrict_swagger_ui(request: Request, call_next):
+    if request.url.path == "/docs":
+        x_forwarded_for = request.headers.get("X-Forwarded-For")
+        client_ip = (
+            x_forwarded_for.split(",")[0] if x_forwarded_for else request.client.host
+        )
+        if client_ip not in ALLOWED_IPS:
+            # Return a custom JSON response for forbidden access
+            return JSONResponse(
+                status_code=403, content=f"Access forbidden: ({client_ip})"
+            )
+    return await call_next(request)
