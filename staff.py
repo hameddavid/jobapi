@@ -2,8 +2,7 @@ from ..users.user import User
 from pydantic import BaseModel
 from typing import List
 
-class Staff(User): 
-    staff_id : int   
+class Staff(User):    
     designation: str
     department: str
     is_Active: bool

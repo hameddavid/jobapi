@@ -1,4 +1,4 @@
-#!/run/media/teewhy/4CE4DE99E4DE851C/works/RUN/fastapi/jobapi/_venv/bin/python
+#!/Users/teewhy/Documents/works/RUN/fastAPI/jobapi/_venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

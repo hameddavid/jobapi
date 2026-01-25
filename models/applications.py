@@ -13,6 +13,7 @@ class AppStatus(Enum):
     SHORTLISTED = "SHORTLISTED"
     INTERVIEWING = "INTERVIEWING"
     OFFERED = "OFFERED"
+    ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
     
 class applications(Base):  #  user may post more than one jobs

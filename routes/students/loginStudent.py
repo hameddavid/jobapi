@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Body 
 from sqlalchemy.orm import Session
-from utils.students.loginStudent import LoginStudent
+from utils.students.loginstudent import LoginStudent
 from models.database import  get_db
 from schemas.students.student import Student, StudentAUTH
 from schemas.general.login import Login 

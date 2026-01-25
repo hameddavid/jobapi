@@ -51,9 +51,10 @@ def LoginStaff(payload: LoginStaff, db: Session ) -> StaffAUTH:
            raise HTTPException(status_code=404, detail=f"Staff({placeHolderLabel}={placeHolderValue}) account requires activation by ADMIN.") 
        access_token = assign_roles_and_create_token(ThisUser, db) 
        roles = access_token.pop("roles", [])
-       staff = Staff(id = ThisStaff.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
+       staff = Staff(id = ThisUser.id,  username = ThisUser.username,  firstname = ThisUser.firstname,  
                         middlename = ThisUser.middlename, lastname = f"{ThisUser.lastname}",
                         emailAddy = f"{ThisUser.emailAddy}", dateTimeCreated = ThisUser.dateTimeCreated, 
+                        staff_id= ThisStaff.id,
                         designation= ThisStaff.designation, department= ThisStaff.department,
                         is_Active= ThisStaff.is_Active, roles= roles)    
        return StaffAUTH(staff = staff,

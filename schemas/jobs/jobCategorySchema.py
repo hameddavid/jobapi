@@ -1,13 +1,14 @@
 
 from pydantic import BaseModel 
 from datetime import datetime
+from typing import Optional
 from schemas.users.user import User as UserSchema
 
 from pydantic import  ConfigDict
 
 class CreateJobCategorySchema(BaseModel):   
     name: str
-    description: str | None = None 
+    description: Optional[str] = None 
  
 
 class UpdateJobCategorySchema(CreateJobCategorySchema):

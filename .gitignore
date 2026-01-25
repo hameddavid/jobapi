@@ -2,3 +2,11 @@ logs/
 requirements.txt
 fb80129b65b03a673d06398535782dda_venv/
 alembic/
+*.pyc
+__pycache__/
+instance/
+.env
+*.sqlite3
+_venv/
+.vscode/
+.DS_Store

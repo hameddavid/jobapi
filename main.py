@@ -29,7 +29,8 @@ origins = [
     "http://127.0.0.1:3039",  # Include this if using localhost with IP
     "http://jobs.run.edu.ng",
     "http://jobs.run.edu.ng:80",
-    "http://192.168.0.102:3039/"
+    "http://192.168.0.102:3039/",
+
     
 
    
@@ -89,7 +90,8 @@ async def read_root():
 
 
 # List of allowed IP addresses
-ALLOWED_IPS = ["162.214.155.50"]  # Replace with your allowed IPs
+# ALLOWED_IPS = ["162.214.155.50"]  # Replace with your allowed IPs
+ALLOWED_IPS = ["127.0.0.1"]
 
 @app.middleware("http")
 async def restrict_swagger_ui(request: Request, call_next):
