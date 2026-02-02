@@ -9,29 +9,59 @@ from models.applications import applications as appModel, AppStatus
 
 def allocate_job(app_id: int, ThisUser:User, db: Session ):  
     try:
-        getApp = db.query(appModel).filter(appModel.id == app_id, appModel.status == 'SUBMITTED').first()
+        getApp = db.query(appModel).filter(appModel.id == app_id, appModel.status != 'OFFERED').first()
         if not getApp:
             raise HTTPException(status_code=404, detail=f"No application found for ID {app_id} or application status is not right for allocation")
-        if getApp.user_id != ThisUser.id:
-            raise HTTPException(status_code=403, detail="Oh no! You are not authorized to allocate this job")
-        newApp = JobAllocation(
-            application_id = getApp.id,
-            dateTimeJobStarted = datetime.utcnow(),
-            dateTimeJobCompleted = None,
-            dateTimeJobClosed = None,
-            dateTimePaymentMade = None,
-            dateTimePaymentConfirmed = None,
-            paymentReceiptURL = None,
-            dateTimeCreated = datetime.utcnow(),
-            dateTimeUpdated = datetime.utcnow(),
-            deleted = 'N'
-        )
-        getJob = db.query(jobModel).filter(jobModel.id == getApp.job_id, jobModel.status=='OPEN').first()
+        
+           # Get the job
+        getJob = db.query(jobModel).filter(jobModel.id == getApp.job_id).first()
         if not getJob:
-            raise HTTPException(status_code=404, detail=f"No job found for ID {getApp.job_id} or job is not open")
-        getJob.status = "ALLOCATED"
+            raise HTTPException(status_code=404, detail=f"No job found for application ID {app_id}")
+        
+        # Check if user is admin or job owner
+        is_admin = "admin" in ThisUser.roles
+        is_job_owner = getJob.user_id == ThisUser.id
+        
+        if not is_admin and not is_job_owner:
+            raise HTTPException(
+                status_code=403, 
+                detail="You are not authorized to allocate this job. Only admins or job owners can perform this action."
+            )
+      
+        if getJob.status != JobStatus.OPEN:
+            raise HTTPException(status_code=404, detail=f"The selected job is not open")
+        
+        # Check if allocation already exists (handling potential left-over records/soft deletes)
+        newApp = db.query(JobAllocation).filter(JobAllocation.application_id == getApp.id).first()
+        
+        if newApp:
+            # Update existing record
+            newApp.dateTimeJobStarted = datetime.utcnow()
+            newApp.dateTimeJobCompleted = None
+            newApp.dateTimeJobClosed = None
+            newApp.dateTimePaymentMade = None
+            newApp.dateTimePaymentConfirmed = None
+            newApp.paymentReceiptURL = None
+            newApp.dateTimeUpdated = datetime.utcnow()
+            newApp.deleted = 'N'
+        else:
+            newApp = JobAllocation(
+                application_id = getApp.id,
+                dateTimeJobStarted = datetime.utcnow(),
+                dateTimeJobCompleted = None,
+                dateTimeJobClosed = None,
+                dateTimePaymentMade = None,
+                dateTimePaymentConfirmed = None,
+                paymentReceiptURL = None,
+                dateTimeCreated = datetime.utcnow(),
+                dateTimeUpdated = datetime.utcnow(),
+                deleted = 'N'
+            )
+            db.add(newApp)
+       
+        getJob.status = JobStatus.ALLOCATED #"ALLOCATED"
         getJob.dateTimeUpdated = datetime.utcnow()
-        getApp.status = "OFFERED"
+        getApp.status = AppStatus.OFFERED #"OFFERED"
         getApp.dateTimeUpdated = datetime.utcnow()
         db.add(newApp)
         db.commit()
@@ -41,6 +71,7 @@ def allocate_job(app_id: int, ThisUser:User, db: Session ):
     except Exception as e:    
         db.rollback()   
         raise HTTPException(status_code=404, detail=f"Allocating job : {str(e)})") 
+
 
 
 def deallocate_job(app_id: int, ThisUser: User, db: Session):

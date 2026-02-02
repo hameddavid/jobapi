@@ -34,3 +34,4 @@ def update_job(jobData:JobUpdate,TheUser, db: Session ):
         raise HTTPException(status_code=404, detail=f"Error updating job: {str(e)})") 
 
  
+

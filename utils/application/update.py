@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from schemas.users.user import User
 from schemas.apps.appschema import UpdateAppSchema
-from models.applications import applications as appModel
+from models.applications import applications as appModel,AppStatus
 from datetime import datetime 
 
 
@@ -36,4 +36,25 @@ def update_app(appData: UpdateAppSchema, ThisUser:User, db: Session ):
             return getApp
     except Exception as e:       
         raise HTTPException(status_code=404, detail=f"Error updating application : {str(e)})") 
+    
+
+
+# update application by owner or admin
+
+def update_app_status_by_owner_or_admin(appId: int,newStatus: AppStatus, TheUser:User, db: Session ):  
+    try:
+        appQ = db.query(appModel).filter(appModel.id == appId).first()
+        if appQ is None:
+            raise HTTPException(status_code=404, detail=f"Application with id {appId} not found.")
+        else:
+            if appQ.user_id != TheUser.id and "admin" not in TheUser.roles:
+                # Check if the user is not the creator and is not an admin
+                raise HTTPException(status_code=403, detail="You do not have permission to update this application.")
+            appQ.status = newStatus
+            appQ.dateTimeUpdated = datetime.utcnow()
+            db.commit()
+            db.refresh(appQ)
+            return appQ
+    except Exception as e:       
+        raise HTTPException(status_code=404, detail=f"Error updating application: {str(e)})")
     
