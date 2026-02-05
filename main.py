@@ -93,18 +93,18 @@ async def read_root():
 
 # List of allowed IP addresses
 # ALLOWED_IPS = ["162.214.155.50"]  # Replace with your allowed IPs
-ALLOWED_IPS = ["127.0.0.1"]
+# ALLOWED_IPS = ["127.0.0.1"]
 
-@app.middleware("http")
-async def restrict_swagger_ui(request: Request, call_next):
-    if request.url.path == "/docs":
-        x_forwarded_for = request.headers.get("X-Forwarded-For")
-        client_ip = (
-            x_forwarded_for.split(",")[0] if x_forwarded_for else request.client.host
-        )
-        if client_ip not in ALLOWED_IPS:
-            # Return a custom JSON response for forbidden access
-            return JSONResponse(
-                status_code=403, content=f"Access forbidden: ({client_ip})"
-            )
-    return await call_next(request)
+# @app.middleware("http")
+# async def restrict_swagger_ui(request: Request, call_next):
+#     if request.url.path == "/docs":
+#         x_forwarded_for = request.headers.get("X-Forwarded-For")
+#         client_ip = (
+#             x_forwarded_for.split(",")[0] if x_forwarded_for else request.client.host
+#         )
+#         if client_ip not in ALLOWED_IPS:
+#             # Return a custom JSON response for forbidden access
+#             return JSONResponse(
+#                 status_code=403, content=f"Access forbidden: ({client_ip})"
+#             )
+#     return await call_next(request)
