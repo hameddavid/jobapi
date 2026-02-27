@@ -35,6 +35,7 @@ class jobs(Base):  #  user may post more than one jobs
     doc_1 = Column(String(200), nullable=True)
     dateTimeCreated = Column(DateTime, default=datetime.utcnow)
     dateTimeUpdated = Column(DateTime, default=datetime.utcnow)
+    comments = Column(String(500), nullable=True)  #  comments from admin when rejecting or requesting changes
     user_id =  Column(Integer,  ForeignKey("users.id"), nullable= False) # must be a user (i.e. staff or student)
     job_category_id = Column(Integer, ForeignKey("jobCategory.id"), nullable= False)  #  job category
     deleted = Column(String(1), default='N')  #  job is deleted by default until admin deletes it

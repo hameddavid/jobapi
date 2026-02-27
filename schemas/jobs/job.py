@@ -2,6 +2,8 @@ from pydantic import BaseModel, ConfigDict,Field
 from fastapi import UploadFile, File, Form
 from datetime import datetime
 from models.jobs import JobStatus
+from typing import Optional
+
 
 from schemas.users.user import User
 from schemas.jobs.jobCategorySchema import GetJobCategorySchema
@@ -20,6 +22,7 @@ class Job(BaseModel):
     user_id:  int    #   he posted the job
     job_category_id: int
     dateTimeCreated: datetime
+    comments: Optional[str] = None 
     deleted: str = 'N'
     class Config:
         orm_mode = True  
@@ -50,6 +53,7 @@ class ListJobSchema(BaseModel):
     owner:  User    #   he posted the job
     category: GetJobCategorySchema
     dateTimeCreated: datetime
+    comments: Optional[str] = None 
     deleted: str = 'N'
     
     model_config = ConfigDict(from_attributes=True)
@@ -65,6 +69,7 @@ class SimpleJobSchema(BaseModel):
     listed_price: float
     status:JobStatus
     dateTimeCreated: datetime
+    comments: Optional[str] = None 
     deleted: str = 'N'
     
     model_config = ConfigDict(from_attributes=True)
